@@ -1,0 +1,16 @@
+Age,City,Study_Hours,Internet_Access,Passed
+18,Delhi,4,Yes,1
+19,Mumbai,6,Yes,1
+18,Delhi,2,No,0
+20,Pune,7,Yes,1
+21,Mumbai,3,Yes,1
+19,Delhi,,Yes,1
+22,Pune,1,No,0
+20,Mumbai,5,,1
+18,Pune,2,No,0
+21,Delhi,8,Yes,1
+19,Mumbai,,Yes,1
+22,Delhi,3,No,0
+20,Pune,6,Yes,1
+18,Mumbai,1,No,0
+21,Pune,4,Yes,1
