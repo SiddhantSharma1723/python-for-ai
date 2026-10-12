@@ -1,0 +1,984 @@
+{
+  "evaluation_name": "baseline_validation_evaluation",
+  "model_name_or_path": "sentence-transformers/all-MiniLM-L6-v2",
+  "split": "val",
+  "timestamp": "2026-10-10T10:47:25.397463",
+  "device": "cuda",
+  "gpu_name": "NVIDIA GeForce RTX 3050 A Laptop GPU",
+  "benchmark_statistics": {
+    "corpus_size": 210,
+    "queries_count": 25,
+    "total_relevant_judgments": 32
+  },
+  "primary_metrics": {
+    "nDCG@10": 0.8823460593888673,
+    "MRR@10": 0.875,
+    "Recall@1": 0.66,
+    "Recall@5": 0.92,
+    "Recall@10": 0.98,
+    "Accuracy@1": 0.8,
+    "Accuracy@5": 0.96,
+    "Accuracy@10": 1.0,
+    "MAP@100": 0.8430769230769231
+  },
+  "raw_evaluator_metrics": {
+    "val_cosine_accuracy@1": 0.8,
+    "val_cosine_accuracy@5": 0.96,
+    "val_cosine_accuracy@10": 1.0,
+    "val_cosine_precision@1": 0.8,
+    "val_cosine_precision@5": 0.23200000000000004,
+    "val_cosine_precision@10": 0.124,
+    "val_cosine_recall@1": 0.66,
+    "val_cosine_recall@5": 0.92,
+    "val_cosine_recall@10": 0.98,
+    "val_cosine_ndcg@10": 0.8823460593888673,
+    "val_cosine_mrr@10": 0.875,
+    "val_cosine_map@100": 0.8430769230769231
+  },
+  "per_query_results": [
+    {
+      "query_id": "q_ag_val_001",
+      "query": "When is it necessary to pass retain_graph=True when calling backward in PyTorch?",
+      "gold_doc_ids": [
+        "doc_ag_test_001",
+        "doc_ag_val_001"
+      ],
+      "hits_in_top10": [
+        "doc_ag_val_001",
+        "doc_ag_test_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        2
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_ag_val_001",
+          "score": 0.7206,
+          "title": "Retaining Graph Structure with retain_graph=True",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_ag_test_001",
+          "score": 0.6704,
+          "title": "Understanding retain_graph Memory Leak Trap",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_025",
+          "score": 0.583,
+          "title": "Memory Pool Management for CUDA Graphs",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_ag_val_002",
+      "query": "How can you offload saved activations from GPU to CPU memory during the forward pass to save VRAM?",
+      "gold_doc_ids": [
+        "doc_ag_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_ag_val_002"
+      ],
+      "ranks_of_gold_in_top10": [
+        8
+      ],
+      "first_relevant_rank": 8,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dl_005",
+          "score": 0.571,
+          "title": "Memory Pinning in DataLoader with pin_memory=True",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_cuda_007",
+          "score": 0.555,
+          "title": "Pinned Host Memory with Tensor.pin_memory",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_sys_008",
+          "score": 0.5386,
+          "title": "KV Cache Mechanics in Autoregressive Generation",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_ag_val_003",
+      "query": "How do you check whether gradient computation is currently active in the calling thread?",
+      "gold_doc_ids": [
+        "doc_ag_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_ag_val_003"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_ag_val_003",
+          "score": 0.5901,
+          "title": "torch.is_grad_enabled Utility",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_ag_004",
+          "score": 0.4809,
+          "title": "torch.no_grad Context Manager",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dist_012",
+          "score": 0.4481,
+          "title": "Disabling Gradient Sync with DDP.no_sync()",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_ag_val_004",
+      "query": "How can I temporarily re-enable autograd tracking inside an enclosing torch.no_grad block?",
+      "gold_doc_ids": [
+        "doc_ag_val_004"
+      ],
+      "hits_in_top10": [
+        "doc_ag_val_004"
+      ],
+      "ranks_of_gold_in_top10": [
+        2
+      ],
+      "first_relevant_rank": 2,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_ag_017",
+          "score": 0.6008,
+          "title": "Saving Non-Tensor Objects in Custom Autograd Functions",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_ag_val_004",
+          "score": 0.5936,
+          "title": "Grad Mode Scoping with torch.enable_grad",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_ag_004",
+          "score": 0.5891,
+          "title": "torch.no_grad Context Manager",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_cuda_val_001",
+      "query": "Why does training speed drop dramatically on Windows laptops when VRAM is exceeded instead of crashing?",
+      "gold_doc_ids": [
+        "doc_cuda_val_001"
+      ],
+      "hits_in_top10": [
+        "doc_cuda_val_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_cuda_val_001",
+          "score": 0.711,
+          "title": "Understanding Windows Shared GPU Memory Spillover",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_ag_test_004",
+          "score": 0.4802,
+          "title": "PyTorch Gradient Accumulation Pattern",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_ag_test_001",
+          "score": 0.4408,
+          "title": "Understanding retain_graph Memory Leak Trap",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_cuda_val_002",
+      "query": "How do you measure actual GPU compute core workload percentage in PyTorch using NVML?",
+      "gold_doc_ids": [
+        "doc_cuda_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_cuda_val_002"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_cuda_val_002",
+          "score": 0.6949,
+          "title": "torch.cuda.utilization and GPU Engine Load",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_cuda_test_003",
+          "score": 0.5791,
+          "title": "Measuring True Kernel Time via CUDA Events Synchronize",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_020",
+          "score": 0.5707,
+          "title": "Device Initialization Overhead and Lazy Context Creation",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_cuda_val_003",
+      "query": "How do you enable TensorFloat-32 (TF32) for faster matrix multiplications on NVIDIA Ampere GPUs?",
+      "gold_doc_ids": [
+        "doc_cuda_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_cuda_val_003"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_cuda_val_003",
+          "score": 0.7823,
+          "title": "Tensor Core Support across Precision Types",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_cuda_020",
+          "score": 0.4796,
+          "title": "Device Initialization Overhead and Lazy Context Creation",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_test_005",
+          "score": 0.4788,
+          "title": "Managing Tensor Sub-Allocations with storage_offset and strides",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_cuda_val_004",
+      "query": "What mechanism allows giving memory placement hints in CUDA unified memory architectures?",
+      "gold_doc_ids": [
+        "doc_cuda_val_004"
+      ],
+      "hits_in_top10": [
+        "doc_cuda_val_004"
+      ],
+      "ranks_of_gold_in_top10": [
+        2
+      ],
+      "first_relevant_rank": 2,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_cuda_017",
+          "score": 0.6562,
+          "title": "cudaMallocAsync Native Async Allocator Integration",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_cuda_val_004",
+          "score": 0.6517,
+          "title": "cudaMemAdvise Unified Memory Primitives",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_test_002",
+          "score": 0.6261,
+          "title": "Tuning expandable_segments in Caching Allocator",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dist_val_001",
+      "query": "Does DDP automatically average gradients across processes or must the user divide loss by world size?",
+      "gold_doc_ids": [
+        "doc_dist_val_001"
+      ],
+      "hits_in_top10": [
+        "doc_dist_val_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dist_val_001",
+          "score": 0.7032,
+          "title": "DDP Gradient Synchronization Averaging Formula",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dist_010",
+          "score": 0.5409,
+          "title": "Gradient Bucketing in DistributedDataParallel",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dist_001",
+          "score": 0.528,
+          "title": "DistributedDataParallel Architecture and Execution Flow",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dist_val_002",
+      "query": "How can you create a communication subgroup in PyTorch for hybrid model and tensor parallelism?",
+      "gold_doc_ids": [
+        "doc_dist_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_dist_val_002"
+      ],
+      "ranks_of_gold_in_top10": [
+        4
+      ],
+      "first_relevant_rank": 4,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dist_val_004",
+          "score": 0.6212,
+          "title": "P2P Communication Primitives: send and recv",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dist_006",
+          "score": 0.5293,
+          "title": "Collective Communication: all_reduce Primitive",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dl_020",
+          "score": 0.5184,
+          "title": "Sharing PyTorch Tensors via Shared Memory in Multiprocessing",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dist_val_003",
+      "query": "How do asynchronous collective operations with async_op=True allow overlapping communication with computation?",
+      "gold_doc_ids": [
+        "doc_dist_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_dist_val_003"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dist_val_003",
+          "score": 0.7498,
+          "title": "Async Collectives with async_op=True",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dist_val_004",
+          "score": 0.4839,
+          "title": "P2P Communication Primitives: send and recv",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dist_val_002",
+          "score": 0.4191,
+          "title": "Custom Subgroups with torch.distributed.new_group",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dist_val_004",
+      "query": "What primitives are used for direct point-to-point communication between two specific distributed ranks?",
+      "gold_doc_ids": [
+        "doc_dist_val_004"
+      ],
+      "hits_in_top10": [
+        "doc_dist_val_004"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dist_val_004",
+          "score": 0.494,
+          "title": "P2P Communication Primitives: send and recv",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dist_007",
+          "score": 0.37,
+          "title": "Collective Communication: broadcast Primitive",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dist_val_002",
+          "score": 0.3582,
+          "title": "Custom Subgroups with torch.distributed.new_group",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_comp_val_001",
+      "query": "What are TorchDynamo Guards and what role do they play in validating compiled code execution?",
+      "gold_doc_ids": [
+        "doc_comp_val_001"
+      ],
+      "hits_in_top10": [
+        "doc_comp_val_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_comp_val_001",
+          "score": 0.8013,
+          "title": "Guards Mechanism in TorchDynamo",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_comp_test_005",
+          "score": 0.4912,
+          "title": "Dynamic Shapes Guard Specialization Penalties",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_comp_021",
+          "score": 0.4655,
+          "title": "Tracing Recompilations with TORCH_LOGS=recompiles",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_comp_val_002",
+      "query": "How can you force a specific critical layer to run in FP32 inside an enclosing autocast block?",
+      "gold_doc_ids": [
+        "doc_comp_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_comp_val_002"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_comp_val_002",
+          "score": 0.563,
+          "title": "Autocast Thread Locality and Nesting",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_comp_010",
+          "score": 0.4874,
+          "title": "torch.autocast Context Manager Semantics",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_comp_test_001",
+          "score": 0.3126,
+          "title": "Diagnosing Autocast Underflow and Loss Divergence",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_comp_val_003",
+      "query": "How do you eliminate Python runtime dispatch latency in TorchInductor using the C++ wrapper?",
+      "gold_doc_ids": [
+        "doc_comp_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_comp_val_003"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_comp_val_003",
+          "score": 0.7367,
+          "title": "Inductor CPP Wrapper for Minimal Python Overhead",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_comp_019",
+          "score": 0.6384,
+          "title": "CUDAGraph Trees Integration in torch.compile",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_test_003",
+          "score": 0.6008,
+          "title": "Measuring True Kernel Time via CUDA Events Synchronize",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_comp_val_004",
+      "query": "How do you preserve GradScaler dynamic loss scaling state across training checkpoint saves and resumes?",
+      "gold_doc_ids": [
+        "doc_comp_val_004"
+      ],
+      "hits_in_top10": [
+        "doc_comp_val_004"
+      ],
+      "ranks_of_gold_in_top10": [
+        2
+      ],
+      "first_relevant_rank": 2,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_comp_test_004",
+          "score": 0.5933,
+          "title": "Correct Sequencing for GradScaler with Gradient Accumulation",
+          "is_relevant": false
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_comp_val_004",
+          "score": 0.5619,
+          "title": "GradScaler State Dict Serialization",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_comp_012",
+          "score": 0.5535,
+          "title": "GradScaler Step and Update Execution Cycle",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dl_val_001",
+      "query": "How do you resolve 'Too many open files' errors caused by file descriptors in PyTorch multiprocessing?",
+      "gold_doc_ids": [
+        "doc_dl_val_001"
+      ],
+      "hits_in_top10": [
+        "doc_dl_val_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dl_val_001",
+          "score": 0.7918,
+          "title": "Multiprocessing File Descriptor Limits on Linux",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dl_009",
+          "score": 0.5654,
+          "title": "Subprocess Start Methods: fork vs spawn in Data Loading",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dl_val_004",
+          "score": 0.5289,
+          "title": "Worker Shutdown Sequence and SIGCHLD Handling",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dl_val_002",
+      "query": "How can a custom BatchSampler enable efficient bulk chunk loading from columnar file formats?",
+      "gold_doc_ids": [
+        "doc_dl_013",
+        "doc_dl_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_dl_val_002",
+        "doc_dl_013"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        2
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dl_val_002",
+          "score": 0.6697,
+          "title": "Custom Sampler Yielding Batch Indices Directly",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dl_013",
+          "score": 0.5682,
+          "title": "BatchSampler Wrapper Overview",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dl_024",
+          "score": 0.5383,
+          "title": "Automatic Batching vs Non-Automatic Batching in DataLoader",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dl_val_003",
+      "query": "How do you explicitly enforce the 'spawn' multiprocessing context on Linux in a PyTorch DataLoader?",
+      "gold_doc_ids": [
+        "doc_dl_009",
+        "doc_dl_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_dl_val_003",
+        "doc_dl_009"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        2
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dl_val_003",
+          "score": 0.7679,
+          "title": "DataLoader multiprocessing_context Argument",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dl_009",
+          "score": 0.7353,
+          "title": "Subprocess Start Methods: fork vs spawn in Data Loading",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dl_val_001",
+          "score": 0.6427,
+          "title": "Multiprocessing File Descriptor Limits on Linux",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_dl_val_004",
+      "query": "How does PyTorch intercept worker process crashes and raise clean exceptions in the main process?",
+      "gold_doc_ids": [
+        "doc_dl_val_004"
+      ],
+      "hits_in_top10": [
+        "doc_dl_val_004"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_dl_val_004",
+          "score": 0.7982,
+          "title": "Worker Shutdown Sequence and SIGCHLD Handling",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dl_020",
+          "score": 0.6337,
+          "title": "Sharing PyTorch Tensors via Shared Memory in Multiprocessing",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_dl_val_001",
+          "score": 0.6018,
+          "title": "Multiprocessing File Descriptor Limits on Linux",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_sys_val_001",
+      "query": "How must C extension modules declare support for free-threaded Python 3.13 to prevent re-enabling the GIL?",
+      "gold_doc_ids": [
+        "doc_sys_val_001",
+        "doc_sys_test_001"
+      ],
+      "hits_in_top10": [
+        "doc_sys_val_001",
+        "doc_sys_test_001"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        2
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_sys_val_001",
+          "score": 0.9101,
+          "title": "Verifying Free-Threaded Python Support in C Extensions",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_sys_test_001",
+          "score": 0.8266,
+          "title": "Why Python Free-Threaded Builds Re-Enable the GIL Automatically",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_sys_002",
+          "score": 0.7579,
+          "title": "Python 3.13 Free-Threaded Build and sys._is_gil_enabled",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_sys_val_002",
+      "query": "What tensor layout, precision, and architectural constraints must be satisfied for FlashAttention to execute in SDPA?",
+      "gold_doc_ids": [
+        "doc_sys_test_002",
+        "doc_sys_val_002"
+      ],
+      "hits_in_top10": [
+        "doc_sys_val_002",
+        "doc_sys_test_002"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        2
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_sys_val_002",
+          "score": 0.7652,
+          "title": "FlashAttention Head Dimension Alignment Constraints",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_sys_test_002",
+          "score": 0.6451,
+          "title": "Diagnosing Silent Fallbacks to SDPA Math Backend",
+          "is_relevant": true
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_sys_005",
+          "score": 0.6018,
+          "title": "SDPA Backend Implementations: FlashAttention, Efficient Attention, Math",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_sys_val_003",
+      "query": "How does serving multiple LoRA adapters against a single frozen base model optimize GPU VRAM in multi-tenant systems?",
+      "gold_doc_ids": [
+        "doc_sys_011",
+        "doc_sys_val_003"
+      ],
+      "hits_in_top10": [
+        "doc_sys_val_003"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_sys_val_003",
+          "score": 0.7864,
+          "title": "LoRA Adapter Swapping in Multi-Tenant Serving",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_sys_019",
+          "score": 0.4736,
+          "title": "PagedAttention Memory Virtualization Concept",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_cuda_val_001",
+          "score": 0.4595,
+          "title": "Understanding Windows Shared GPU Memory Spillover",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_sys_val_004",
+      "query": "How does Sliding Window Attention maintain a constant KV cache memory ceiling for streaming inputs?",
+      "gold_doc_ids": [
+        "doc_sys_val_004",
+        "doc_sys_008"
+      ],
+      "hits_in_top10": [
+        "doc_sys_val_004",
+        "doc_sys_008"
+      ],
+      "ranks_of_gold_in_top10": [
+        1,
+        8
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_sys_val_004",
+          "score": 0.7541,
+          "title": "Sliding Window Attention (Local Attention) Memory Ceiling",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_sys_test_005",
+          "score": 0.5758,
+          "title": "Memory Savings Ratio of Grouped-Query Attention (GQA)",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_sys_009",
+          "score": 0.5266,
+          "title": "Dynamic KV Cache vs Static Pre-Allocated KV Cache",
+          "is_relevant": false
+        }
+      ]
+    },
+    {
+      "query_id": "q_sys_val_005",
+      "query": "How do you label custom user code blocks in the PyTorch Profiler timeline using record_function?",
+      "gold_doc_ids": [
+        "doc_sys_val_005"
+      ],
+      "hits_in_top10": [
+        "doc_sys_val_005"
+      ],
+      "ranks_of_gold_in_top10": [
+        1
+      ],
+      "first_relevant_rank": 1,
+      "top3_retrieved": [
+        {
+          "rank": 1,
+          "doc_id": "doc_sys_val_005",
+          "score": 0.657,
+          "title": "Context Manager for Profiling Host vs GPU Time: record_function",
+          "is_relevant": true
+        },
+        {
+          "rank": 2,
+          "doc_id": "doc_dl_023",
+          "score": 0.405,
+          "title": "Custom Pin Memory Logic with PinMemoryHook",
+          "is_relevant": false
+        },
+        {
+          "rank": 3,
+          "doc_id": "doc_ag_024",
+          "score": 0.3719,
+          "title": "Checkpointing Non-Reentrant Implementation",
+          "is_relevant": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "report_name": "final_evaluation_report_week26",
+  "project": "pytorch_ai_engineering_retrieval_benchmark",
+  "timestamp": "2026-10-10T11:46:00",
+  "base_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "fine_tuned_model": "models/fine_tuned_all_minilm_l6_v2",
+  "final_verdict": "WIN",
+  "test_split_evaluation": {
+    "corpus_size": 210,
+    "queries_count": 35,
+    "relevance_judgments_count": 60,
+    "verdict": "WIN",
+    "metrics": {
+      "nDCG@10": {
+        "baseline": 0.948293,
+        "finetuned": 0.956424,
+        "delta": 0.008131,
+        "relative_gain_percent": 0.86
+      },
+      "MRR@10": {
+        "baseline": 0.971429,
+        "finetuned": 0.971429,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "Recall@1": {
+        "baseline": 0.609524,
+        "finetuned": 0.623810,
+        "delta": 0.014286,
+        "relative_gain_percent": 2.34
+      },
+      "Recall@5": {
+        "baseline": 0.947619,
+        "finetuned": 0.976190,
+        "delta": 0.028571,
+        "relative_gain_percent": 3.01
+      },
+      "Recall@10": {
+        "baseline": 0.976190,
+        "finetuned": 0.976190,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "Accuracy@1": {
+        "baseline": 0.942857,
+        "finetuned": 0.942857,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "Accuracy@5": {
+        "baseline": 1.0,
+        "finetuned": 1.0,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "Accuracy@10": {
+        "baseline": 1.0,
+        "finetuned": 1.0,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "MAP@100": {
+        "baseline": 0.922572,
+        "finetuned": 0.939209,
+        "delta": 0.016637,
+        "relative_gain_percent": 1.80
+      }
+    }
+  },
+  "validation_split_evaluation": {
+    "corpus_size": 210,
+    "queries_count": 25,
+    "relevance_judgments_count": 32,
+    "verdict": "WIN",
+    "metrics": {
+      "nDCG@10": {
+        "baseline": 0.882346,
+        "finetuned": 0.966717,
+        "delta": 0.084371,
+        "relative_gain_percent": 9.56
+      },
+      "MRR@10": {
+        "baseline": 0.875,
+        "finetuned": 0.97,
+        "delta": 0.095,
+        "relative_gain_percent": 10.86
+      },
+      "Recall@1": {
+        "baseline": 0.66,
+        "finetuned": 0.82,
+        "delta": 0.16,
+        "relative_gain_percent": 24.24
+      },
+      "Recall@5": {
+        "baseline": 0.92,
+        "finetuned": 0.98,
+        "delta": 0.06,
+        "relative_gain_percent": 6.52
+      },
+      "Recall@10": {
+        "baseline": 0.98,
+        "finetuned": 1.0,
+        "delta": 0.02,
+        "relative_gain_percent": 2.04
+      },
+      "Accuracy@1": {
+        "baseline": 0.8,
+        "finetuned": 0.96,
+        "delta": 0.16,
+        "relative_gain_percent": 20.0
+      },
+      "Accuracy@5": {
+        "baseline": 0.96,
+        "finetuned": 1.0,
+        "delta": 0.04,
+        "relative_gain_percent": 4.17
+      },
+      "Accuracy@10": {
+        "baseline": 1.0,
+        "finetuned": 1.0,
+        "delta": 0.0,
+        "relative_gain_percent": 0.0
+      },
+      "MAP@100": {
+        "baseline": 0.843077,
+        "finetuned": 0.949048,
+        "delta": 0.105971,
+        "relative_gain_percent": 12.57
+      }
+    }
+  },
+  "training_summary": {
+    "loss": "MultipleNegativesRankingLoss",
+    "mnrl_scale": 20.0,
+    "train_pairs": 150,
+    "epochs": 4,
+    "batch_size": 16,
+    "learning_rate": 2e-05,
+    "best_epoch": 3,
+    "duration_seconds": 3.75,
+    "hardware": "NVIDIA GeForce RTX 3050 A Laptop GPU (4 GB VRAM)",
+    "precision": "bfloat16"
+  }
+}

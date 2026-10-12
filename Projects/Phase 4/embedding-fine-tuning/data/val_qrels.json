@@ -1,0 +1,84 @@
+{
+  "q_ag_val_001": {
+    "doc_ag_val_001": 1,
+    "doc_ag_test_001": 1
+  },
+  "q_ag_val_002": {
+    "doc_ag_val_002": 1
+  },
+  "q_ag_val_003": {
+    "doc_ag_val_003": 1
+  },
+  "q_ag_val_004": {
+    "doc_ag_val_004": 1
+  },
+  "q_cuda_val_001": {
+    "doc_cuda_val_001": 1
+  },
+  "q_cuda_val_002": {
+    "doc_cuda_val_002": 1
+  },
+  "q_cuda_val_003": {
+    "doc_cuda_val_003": 1
+  },
+  "q_cuda_val_004": {
+    "doc_cuda_val_004": 1
+  },
+  "q_dist_val_001": {
+    "doc_dist_val_001": 1
+  },
+  "q_dist_val_002": {
+    "doc_dist_val_002": 1
+  },
+  "q_dist_val_003": {
+    "doc_dist_val_003": 1
+  },
+  "q_dist_val_004": {
+    "doc_dist_val_004": 1
+  },
+  "q_comp_val_001": {
+    "doc_comp_val_001": 1
+  },
+  "q_comp_val_002": {
+    "doc_comp_val_002": 1
+  },
+  "q_comp_val_003": {
+    "doc_comp_val_003": 1
+  },
+  "q_comp_val_004": {
+    "doc_comp_val_004": 1
+  },
+  "q_dl_val_001": {
+    "doc_dl_val_001": 1
+  },
+  "q_dl_val_002": {
+    "doc_dl_val_002": 1,
+    "doc_dl_013": 1
+  },
+  "q_dl_val_003": {
+    "doc_dl_val_003": 1,
+    "doc_dl_009": 1
+  },
+  "q_dl_val_004": {
+    "doc_dl_val_004": 1
+  },
+  "q_sys_val_001": {
+    "doc_sys_val_001": 1,
+    "doc_sys_test_001": 1
+  },
+  "q_sys_val_002": {
+    "doc_sys_val_002": 1,
+    "doc_sys_test_002": 1
+  },
+  "q_sys_val_003": {
+    "doc_sys_val_003": 1,
+    "doc_sys_011": 1
+  },
+  "q_sys_val_004": {
+    "doc_sys_val_004": 1,
+    "doc_sys_008": 1
+  },
+  "q_sys_val_005": {
+    "doc_sys_val_005": 1
+  }
+}

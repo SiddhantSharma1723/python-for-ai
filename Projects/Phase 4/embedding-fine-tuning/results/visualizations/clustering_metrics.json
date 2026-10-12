@@ -1,0 +1,43 @@
+{
+  "metrics_description": "Cluster quality metrics measuring separation of the 6 PyTorch technical topics",
+  "high_dimensional_384d": {
+    "silhouette_score": {
+      "baseline": 0.0417,
+      "finetuned": 0.0432,
+      "delta": 0.0015,
+      "higher_is_better": true
+    },
+    "davies_bouldin_index": {
+      "baseline": 3.523,
+      "finetuned": 3.7526,
+      "delta": 0.2296,
+      "lower_is_better": true
+    },
+    "calinski_harabasz_score": {
+      "baseline": 7.74,
+      "finetuned": 6.78,
+      "delta": -0.95,
+      "higher_is_better": true
+    }
+  },
+  "pca_2d_silhouette": {
+    "baseline": -0.0203,
+    "finetuned": 0.0478,
+    "delta": 0.0681
+  },
+  "tsne_2d_silhouette": {
+    "baseline": 0.1232,
+    "finetuned": 0.1337,
+    "delta": 0.0105
+  },
+  "pca_explained_variance_ratio_2d": {
+    "baseline": [
+      0.0881,
+      0.0722
+    ],
+    "finetuned": [
+      0.0716,
+      0.0502
+    ]
+  }
+}

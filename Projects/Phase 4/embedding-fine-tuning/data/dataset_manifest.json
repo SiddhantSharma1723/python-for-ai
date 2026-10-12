@@ -1,0 +1,47 @@
+{
+  "dataset_name": "pytorch_ai_engineering_retrieval_benchmark",
+  "description": "Standard Information Retrieval benchmark over fixed 210-passage Python/PyTorch documentation corpus",
+  "evaluation_retrieval_corpus": {
+    "file": "corpus.json",
+    "total_passages": 210,
+    "description": "The complete fixed 210-passage corpus is the search space for both baseline and post-training evaluation"
+  },
+  "statistics": {
+    "corpus_size": 210,
+    "train_pairs_count": 150,
+    "val_queries_count": 25,
+    "val_total_judgments": 32,
+    "test_queries_count": 35,
+    "test_total_judgments": 60,
+    "corpus_topics": {
+      "autograd": 35,
+      "cuda_memory": 35,
+      "distributed": 35,
+      "compilation_optimization": 35,
+      "dataloader_io": 35,
+      "systems_attention_llm": 35
+    },
+    "train_topics": {
+      "autograd": 25,
+      "cuda_memory": 25,
+      "distributed": 25,
+      "compilation_optimization": 25,
+      "dataloader_io": 25,
+      "systems_attention_llm": 25
+    }
+  },
+  "methodology": {
+    "query_leakage_prevented": true,
+    "queries_strictly_disjoint": true,
+    "relevance_completeness": "Uncensored: every genuinely relevant passage in the 210-passage corpus is included in Qrels",
+    "benchmark_fixed_before_training": true
+  },
+  "sha256_checksums": {
+    "corpus.json": "e1aa0028bea57edbd3d8da34030e06e1ed2ef56b8099391f81a2e7e94ff9ea61",
+    "train_pairs.json": "5fd84aa918e4653ba4a4e77f7ac99793e14ae4184d798c21baf8931978688919",
+    "val_queries.json": "b54e820afd22b5b7c688946ab746004ad825e98ad1b5f0b9d63734f602c81225",
+    "val_qrels.json": "205c19ad3904d00f58e635316f83cba1d15550611f1aa764940877ca04c86701",
+    "test_queries.json": "5229a0dd0082dede88d755ab7f396d9be4d2141a9fd3548296a0d77f84135c32",
+    "test_qrels.json": "8b07a17e19147443613bbf0618cf81fa5c2709b69b24218b868c4d2883714492"
+  }
+}

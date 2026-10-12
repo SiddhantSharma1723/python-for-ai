@@ -1,0 +1,1472 @@
+{
+  "doc_ag_001": {
+    "title": "Autograd Reverse-Mode Automatic Differentiation",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html",
+    "text": "PyTorch autograd is a reverse automatic differentiation system. Conceptually, autograd records a graph of all operations executed on tensors as an acyclic graph of Function objects. In the backward pass, autograd evaluates these functions in topological reverse order, applying the chain rule to propagate incoming gradients from output tensors backward to input leaves.",
+    "split": "train"
+  },
+  "doc_ag_002": {
+    "title": "Tensor is_leaf Attribute Semantics",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.is_leaf.html",
+    "text": "All tensors that have requires_grad=False are leaf tensors by definition. For tensors that have requires_grad=True, they are leaf tensors if and only if they were created directly by the user and not as the result of an operation. This means model parameters initialized in nn.Module layers are leaf tensors, whereas intermediate activation tensors produced by operations are non-leaf tensors.",
+    "split": "train"
+  },
+  "doc_ag_003": {
+    "title": "Accumulating Gradients on Leaf Tensors",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html",
+    "text": "By default, gradients computed during backward() are accumulated (added) into the .grad attribute of leaf tensors rather than overwriting existing values. This design allows users to easily accumulate gradients across multiple mini-batches before calling optimizer.step(). However, it necessitates explicitly calling optimizer.zero_grad() before each training step to prevent unintended gradient buildup.",
+    "split": "train"
+  },
+  "doc_ag_004": {
+    "title": "torch.no_grad Context Manager",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.no_grad.html",
+    "text": "The torch.no_grad context manager disables gradient calculation locally. Disabling gradient calculation reduces memory consumption for computations that would otherwise have requires_grad=True, because intermediate activations needed for backward computation do not need to be saved. It is thread-local and affects only operations within the active thread.",
+    "split": "train"
+  },
+  "doc_ag_005": {
+    "title": "torch.inference_mode vs torch.no_grad",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.autograd.grad_mode.inference_mode.html",
+    "text": "torch.inference_mode is a context manager that offers better performance than torch.no_grad by disabling both autograd tracking and version counter tracking. Tensors created inside inference_mode cannot be subsequently used in autograd-tracked computations, whereas tensors created under torch.no_grad still have valid tracking metadata and can later be mutated or consumed by autograd.",
+    "split": "train"
+  },
+  "doc_ag_006": {
+    "title": "Tensor.detach() Method",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.detach.html",
+    "text": "Returns a new Tensor, detached from the current computational graph. The detached tensor will never require gradient and shares underlying data storage with the original tensor. In-place modifications to either the detached or original tensor will be reflected in both, which can trigger autograd version counter errors if the original tensor was saved for backward.",
+    "split": "train"
+  },
+  "doc_ag_007": {
+    "title": "Autograd In-Place Modification Detection",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html#in-place-operations-with-autograd",
+    "text": "Every tensor maintains an internal version counter that increments whenever an in-place mutation occurs (such as add_() or slice assignments). If an operation saved a tensor for its backward computation, autograd checks the version counter during backward(). If the version changed between forward and backward passes, an error is raised because the required forward values were overwritten.",
+    "split": "train"
+  },
+  "doc_ag_008": {
+    "title": "Non-Leaf Tensor Gradients with retain_grad()",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.retain_grad.html",
+    "text": "By default, autograd does not populate the .grad field for non-leaf tensors to conserve memory; their gradients are computed and immediately freed once propagated to upstream nodes. Calling retain_grad() on a non-leaf tensor instructs autograd to retain its gradient in the .grad attribute after backward completes, enabling activation gradient inspection.",
+    "split": "train"
+  },
+  "doc_ag_009": {
+    "title": "Registering Hooks on Tensors with register_hook()",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.register_hook.html",
+    "text": "register_hook registers a backward hook on a tensor. The hook is called every time a gradient with respect to the tensor is computed. The hook takes the incoming gradient as its single argument and can return a new gradient to replace it, or return None to leave the gradient unchanged. It returns a RemovableHandle that can be used to remove the hook.",
+    "split": "train"
+  },
+  "doc_ag_010": {
+    "title": "torch.autograd.grad() Functional API",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.autograd.grad.html",
+    "text": "torch.autograd.grad computes and returns the sum of gradients of outputs with respect to the inputs. Unlike Tensor.backward(), it does not accumulate gradients into input .grad attributes unless explicitly requested; instead, it returns the gradients directly as a tuple of tensors. This makes it suitable for computing higher-order derivatives like Hessian-vector products.",
+    "split": "train"
+  },
+  "doc_ag_011": {
+    "title": "Gradient Penalty and create_graph Parameter",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.autograd.grad.html",
+    "text": "When computing higher-order derivatives or gradient penalties (such as in WGAN-GP), passing create_graph=True to torch.autograd.grad or backward() constructs a graph of the derivative computation itself. This allows computing gradients of the gradients in a subsequent backward pass, though it retains intermediate activations until the graph is freed.",
+    "split": "train"
+  },
+  "doc_ag_012": {
+    "title": "Custom Autograd Functions with torch.autograd.Function",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#function",
+    "text": "Users can extend autograd by subclassing torch.autograd.Function and implementing static forward() and backward() methods. In forward(), the context object ctx is used with ctx.save_for_backward() to store tensors needed for gradient calculation. In backward(), ctx.saved_tensors unpacks them to compute vector-Jacobian products for each input requiring grad.",
+    "split": "train"
+  },
+  "doc_ag_013": {
+    "title": "Autograd grad_fn Attribute",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.Tensor.grad_fn",
+    "text": "The grad_fn attribute references the autograd Node that created the tensor. For leaf tensors created by user constructors (like torch.randn), grad_fn is None. For output tensors created by differentiable operations, grad_fn points to the specific Node (such as AddBackward0 or MulBackward0) that executed the forward operation and holds the backward formula.",
+    "split": "train"
+  },
+  "doc_ag_014": {
+    "title": "Custom Vector-Jacobian Product via backward(gradient=...)",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html",
+    "text": "If the tensor on which backward() is called is non-scalar (has more than one element), the gradient argument is required. This argument represents the external vector v in the vector-Jacobian product v^T * J. The gradient tensor must match the shape and device of the output tensor.",
+    "split": "train"
+  },
+  "doc_ag_015": {
+    "title": "Autograd Anomaly Detection with detect_anomaly",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#anomaly-detection",
+    "text": "torch.autograd.detect_anomaly enables anomaly detection for the autograd engine. When enabled, it records forward stack traces and asserts that forward and backward passes produce finite values. If any operation outputs NaN or Inf gradients during backward, it prints the exact forward code location that created the failing node.",
+    "split": "train"
+  },
+  "doc_ag_016": {
+    "title": "torch.autograd.set_detect_anomaly Performance Cost",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.autograd.set_detect_anomaly",
+    "text": "Enabling anomaly detection introduces significant runtime overhead because it captures and stores python stack traces for every single forward operation in the computational graph. It should be used solely as a debugging tool to track down NaN gradients and disabled during production training runs.",
+    "split": "train"
+  },
+  "doc_ag_017": {
+    "title": "Saving Non-Tensor Objects in Custom Autograd Functions",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.autograd.function.FunctionCtx",
+    "text": "In a custom torch.autograd.Function, non-tensor objects (such as python booleans, integers, strings, or shapes) must not be saved using ctx.save_for_backward(). Instead, they should be assigned directly as attributes on the context object (ctx.my_attr = value). Only tensors subject to version tracking belong in save_for_backward.",
+    "split": "train"
+  },
+  "doc_ag_018": {
+    "title": "requires_grad Propagation Rule",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html#requires-grad",
+    "text": "If any single input to an operation has requires_grad=True, the output tensor will automatically have requires_grad=True. Conversely, if all input tensors have requires_grad=False, the output tensor will also have requires_grad=False and no autograd Node will be attached to it.",
+    "split": "train"
+  },
+  "doc_ag_019": {
+    "title": "Toggling requires_grad_() In-Place",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.requires_grad_.html",
+    "text": "requires_grad_() changes an existing tensor's requires_grad attribute in-place. When fine-tuning or freezing pretrained models, setting param.requires_grad = False (or param.requires_grad_(False)) stops autograd from recording operations involving those weights and skips gradient computation for frozen layers during backward.",
+    "split": "train"
+  },
+  "doc_ag_020": {
+    "title": "Autograd Profiler with torch.autograd.profiler.profile",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#profiler",
+    "text": "The autograd profiler context manager allows users to profile operators executed in forward and backward passes. It records CPU and CUDA execution times, memory usage, and operator hierarchy, outputting a table formatted by total time or self time to identify bottlenecks.",
+    "split": "train"
+  },
+  "doc_ag_021": {
+    "title": "Memory Optimization via optimizer.zero_grad(set_to_none=True)",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html",
+    "text": "Passing set_to_none=True to optimizer.zero_grad() deletes the tensor allocations stored in param.grad by setting them to None, rather than overwriting them with zeros. This reduces peak memory usage and slightly improves speed because subsequent backward operations allocate memory on-demand rather than performing read-write zero addition.",
+    "split": "train"
+  },
+  "doc_ag_022": {
+    "title": "Autograd Node next_functions Attribute",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#node",
+    "text": "Every autograd Node maintains a next_functions tuple representing its incoming edges in the computational graph. Each entry is a tuple containing the upstream Node and the output index of that node. Traversing next_functions allows inspecting the full backward graph structure programmatically.",
+    "split": "train"
+  },
+  "doc_ag_023": {
+    "title": "Gradient Checkpointing with torch.utils.checkpoint",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/checkpoint.html",
+    "text": "Gradient checkpointing trades computation time for memory. Instead of storing all intermediate activation tensors during the forward pass for backward, checkpointing discards activations and recomputes them on-the-fly during the backward pass. This reduces peak activation memory by approximately 30-50% at the cost of a 20-30% slower backward pass.",
+    "split": "train"
+  },
+  "doc_ag_024": {
+    "title": "Checkpointing Non-Reentrant Implementation",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/checkpoint.html#torch.utils.checkpoint.checkpoint",
+    "text": "PyTorch checkpoint() supports use_reentrant=False, which uses autograd hooks rather than creating nested reentrant autograd calls. The non-reentrant implementation supports inputs with requires_grad=False, handles autograd hooks properly, and correctly interfaces with torch.compile.",
+    "split": "train"
+  },
+  "doc_ag_025": {
+    "title": "Registering Module Full Backward Hooks",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.register_full_backward_hook",
+    "text": "register_full_backward_hook registers a backward hook on an nn.Module. The hook receives (module, grad_input, grad_output) whenever backward is evaluated for the module. It allows observing or modifying gradients flowing into and out of specific submodules during training.",
+    "split": "train"
+  },
+  "doc_ag_val_001": {
+    "title": "Retaining Graph Structure with retain_graph=True",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html",
+    "text": "Normally, intermediate activation buffers and graph structures are freed immediately after calling backward() to conserve memory. If you need to perform multiple backward passes through the same computational graph (for instance, in multi-task loss weighting or GAN generator-discriminator passes), you must specify retain_graph=True in the backward() call.",
+    "split": "val"
+  },
+  "doc_ag_val_002": {
+    "title": "Saved Tensors Hooks with saved_tensors_hooks",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.autograd.graph.saved_tensors_hooks",
+    "text": "torch.autograd.graph.saved_tensors_hooks is a context manager that allows defining custom pack and unpack hooks for intermediate tensors saved by autograd. This can be used to compress activations or offload them from GPU VRAM to host CPU RAM while waiting for the backward pass, reducing peak GPU memory.",
+    "split": "val"
+  },
+  "doc_ag_val_003": {
+    "title": "torch.is_grad_enabled Utility",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.is_grad_enabled.html",
+    "text": "torch.is_grad_enabled returns True if the current thread has gradient computation enabled. It reflects the cumulative state of active torch.no_grad(), torch.enable_grad(), and torch.set_grad_enabled(mode) context managers in the calling thread.",
+    "split": "val"
+  },
+  "doc_ag_val_004": {
+    "title": "Grad Mode Scoping with torch.enable_grad",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.enable_grad.html",
+    "text": "torch.enable_grad is a context manager that enables gradient calculation. It is primarily used to re-enable gradient calculation inside a function or loop that is currently executing within an enclosing torch.no_grad() block.",
+    "split": "val"
+  },
+  "doc_ag_test_001": {
+    "title": "Understanding retain_graph Memory Leak Trap",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/faq.html#my-model-reports-cuda-runtime-error-2-out-of-memory",
+    "text": "Calling backward(retain_graph=True) keeps all intermediate activations in GPU memory across iterations. If called without a corresponding graph free or if loss history tensors are accumulated without calling item() or detach(), the retained computational graphs remain chained together, causing continuous VRAM growth until an out-of-memory error occurs.",
+    "split": "test"
+  },
+  "doc_ag_test_002": {
+    "title": "Autograd Graph Break with torch.autograd.gradcheck",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.autograd.gradcheck",
+    "text": "torch.autograd.gradcheck tests that analytical gradients computed by custom autograd Functions match numerical gradients computed via finite differences. It checks that Jacobians are accurate within specified tolerances (eps, atol, rtol) and verifies that inputs requiring grad produce correct derivatives.",
+    "split": "test"
+  },
+  "doc_ag_test_003": {
+    "title": "In-Place Modification Error on Saved Tensors",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html#in-place-correctness-checks",
+    "text": "When PyTorch raises 'RuntimeError: one of the variables needed for gradient computation has been modified by an inplace operation', it indicates that a tensor saved during forward pass was mutated before backward was executed. Changing operations like x += y to x = x + y or cloning tensors before in-place mutation resolves this error.",
+    "split": "test"
+  },
+  "doc_ag_test_004": {
+    "title": "PyTorch Gradient Accumulation Pattern",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html",
+    "text": "To perform gradient accumulation over K mini-batches, one divides the mini-batch loss by K (loss = loss / K), runs loss.backward(), and only executes optimizer.step() and optimizer.zero_grad() once every K iterations. This simulates training with an effective batch size K times larger without increasing per-step VRAM.",
+    "split": "test"
+  },
+  "doc_ag_test_005": {
+    "title": "Graph Node Cycle Prevention",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/notes/autograd.html",
+    "text": "The autograd graph is strictly a Directed Acyclic Graph (DAG). Cycles cannot be formed because every operation creates a new output tensor with a new Node pointing backwards only to pre-existing input nodes. Modifying an existing tensor in-place updates its version counter rather than creating a cycle.",
+    "split": "test"
+  },
+  "doc_ag_test_006": {
+    "title": "torch.autograd.variable vs Tensor Unification",
+    "topic": "autograd",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html",
+    "text": "In modern PyTorch, the Variable class is fully merged into Tensor. Tensors now natively track requires_grad, grad, grad_fn, and is_leaf attributes without requiring a Variable wrapper. Code importing Variable from torch.autograd is legacy and should use torch.Tensor directly.",
+    "split": "test"
+  },
+  "doc_cuda_001": {
+    "title": "PyTorch CUDA Caching Allocator Overview",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#memory-management",
+    "text": "PyTorch uses a caching allocator for CUDA memory management. Instead of repeatedly invoking cudaMalloc and cudaFree, which incur high synchronization latency, PyTorch allocates large blocks of GPU memory from CUDA driver and manages smaller allocations internally. When a tensor is freed by Python garbage collection, the memory remains reserved in the caching pool for fast reuse.",
+    "split": "train"
+  },
+  "doc_cuda_002": {
+    "title": "torch.cuda.memory_allocated Function",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.memory_allocated",
+    "text": "torch.cuda.memory_allocated(device=None) returns the current GPU memory occupied by live tensors in bytes for a given device. This metric counts only memory currently held by active tensor buffers, excluding memory cached by the caching allocator but currently unoccupied by tensor data.",
+    "split": "train"
+  },
+  "doc_cuda_003": {
+    "title": "torch.cuda.memory_reserved Function",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.memory_reserved",
+    "text": "torch.cuda.memory_reserved(device=None) returns the total amount of GPU memory currently reserved by the caching allocator for a given device. This value is always greater than or equal to memory_allocated. The difference between memory_reserved and memory_allocated represents inactive cached memory available for immediate tensor allocation without driver calls.",
+    "split": "train"
+  },
+  "doc_cuda_004": {
+    "title": "torch.cuda.empty_cache Behavior and Limitations",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.empty_cache",
+    "text": "torch.cuda.empty_cache() releases all unoccupied cached memory currently held by the caching allocator back to the CUDA driver so that other GPU applications can use it. However, calling empty_cache() does not free any GPU memory occupied by live tensors, and it can introduce runtime overhead by forcing subsequent tensor allocations to invoke slow cudaMalloc system calls.",
+    "split": "train"
+  },
+  "doc_cuda_005": {
+    "title": "Peak VRAM Tracking with max_memory_allocated",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.max_memory_allocated",
+    "text": "torch.cuda.max_memory_allocated(device=None) returns the maximum GPU memory in bytes that has been occupied by live tensors since the beginning of execution or since reset_peak_memory_stats() was last called. It is the primary metric for determining the true peak memory consumption of a model's forward and backward pass.",
+    "split": "train"
+  },
+  "doc_cuda_006": {
+    "title": "Resetting Memory High-Water Marks with reset_peak_memory_stats",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.reset_peak_memory_stats",
+    "text": "torch.cuda.reset_peak_memory_stats(device=None) resets the peak memory tracking statistics recorded by PyTorch for the specified device. Calling this immediately before a training epoch or validation step allows isolating and measuring the exact peak VRAM consumed during that specific phase.",
+    "split": "train"
+  },
+  "doc_cuda_007": {
+    "title": "Pinned Host Memory with Tensor.pin_memory",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.pin_memory.html",
+    "text": "pin_memory() copies a CPU tensor into page-locked (pinned) host memory. Host memory allocated as pinned cannot be paged out by the operating system virtual memory manager, allowing the GPU to access it directly via Direct Memory Access (DMA). This enables asynchronous, non-blocking data transfers from CPU to GPU via cudaMemcpyAsync.",
+    "split": "train"
+  },
+  "doc_cuda_008": {
+    "title": "Asynchronous Memory Transfers with non_blocking=True",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.to.html",
+    "text": "When calling tensor.to(device='cuda', non_blocking=True) or tensor.cuda(non_blocking=True), the memory transfer is performed asynchronously with respect to the host CPU if and only if the source tensor resides in pinned host memory. If the source tensor is in regular paged memory, the call silently reverts to a synchronous blocking transfer.",
+    "split": "train"
+  },
+  "doc_cuda_009": {
+    "title": "CUDA Streams Overview and Concurrency",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#cuda-streams",
+    "text": "A CUDA stream is a linear sequence of execution commands that execute in order on the GPU. Operations on different streams can execute concurrently or out-of-order relative to each other, allowing overlap of data transfers with kernel execution. By default, each GPU device uses a single default stream (stream 0).",
+    "split": "train"
+  },
+  "doc_cuda_010": {
+    "title": "Stream Synchronization with torch.cuda.Stream.synchronize",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.Stream.synchronize",
+    "text": "stream.synchronize() blocks the calling CPU host thread until all kernels, memory copies, and events previously enqueued on that specific CUDA stream have completed execution on the device. Calling torch.cuda.synchronize() blocks until all streams on the active device have completed.",
+    "split": "train"
+  },
+  "doc_cuda_011": {
+    "title": "CUDA Events for Asynchronous Timing and Dependency Management",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.cuda.Event.html",
+    "text": "CUDA events are synchronization markers that can be recorded into a CUDA stream. They can be used to synchronize execution across different streams (stream.wait_event(event)) or to accurately measure elapsed GPU execution time between two recorded events via event_start.elapsed_time(event_end) without introducing CPU synchronization stalls.",
+    "split": "train"
+  },
+  "doc_cuda_012": {
+    "title": "Managing Multiple GPUs with torch.cuda.device Context",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.cuda.device.html",
+    "text": "torch.cuda.device(device_idx) is a context manager that changes the current active CUDA device for the calling thread. Tensors created inside the context block without explicit device arguments will default to the specified GPU device, and stream operations will execute within that device's context.",
+    "split": "train"
+  },
+  "doc_cuda_013": {
+    "title": "CUDA IPC for Inter-Process Tensor Sharing",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#interprocess-communication-ipc",
+    "text": "PyTorch supports CUDA Inter-Process Communication (IPC) to share CUDA tensors between distinct Python processes on the same machine without copying data through CPU host RAM. CUDA IPC handles allow a consumer process to map the existing GPU virtual memory allocation of a producer process directly.",
+    "split": "train"
+  },
+  "doc_cuda_014": {
+    "title": "CUDA Allocator Memory Fragmentation Problem",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#memory-management",
+    "text": "Memory fragmentation occurs when the total free memory in the caching allocator is large enough to satisfy an allocation request, but no single contiguous memory block is large enough. In such cases, the allocator is forced to request a new block from the CUDA driver, which can fail with a CUDA out-of-memory error even though total reserved memory appears sufficient.",
+    "split": "train"
+  },
+  "doc_cuda_015": {
+    "title": "Tuning Allocator with PYTORCH_CUDA_ALLOC_CONF",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf",
+    "text": "The PYTORCH_CUDA_ALLOC_CONF environment variable allows fine-tuning allocator parameters. Settings like max_split_size_mb prevent large blocks from being split into small chunks, helping mitigate memory fragmentation for models with frequent varying-sized tensor allocations during generation or autoregressive decoding.",
+    "split": "train"
+  },
+  "doc_cuda_016": {
+    "title": "CUDA Memory Snapshot Recording",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.memory._record_memory_history",
+    "text": "torch.cuda.memory._record_memory_history(enabled=True) records every single memory allocation and deallocation event alongside its Python traceback. The recorded trace can be dumped to an HTML/JSON file using _dump_snapshot() and visualized interactively in the PyTorch memory visualizer to find memory leaks.",
+    "split": "train"
+  },
+  "doc_cuda_017": {
+    "title": "cudaMallocAsync Native Async Allocator Integration",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#memory-management",
+    "text": "Setting backend:cudaMallocAsync in PYTORCH_CUDA_ALLOC_CONF switches PyTorch from its internal block caching allocator to NVIDIA's native stream-ordered memory allocator (cudaMallocAsync). This improves multi-stream memory safety and allows the CUDA driver to manage memory pools directly across streams.",
+    "split": "train"
+  },
+  "doc_cuda_018": {
+    "title": "torch.cuda.set_per_process_memory_fraction",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.set_per_process_memory_fraction",
+    "text": "torch.cuda.set_per_process_memory_fraction(fraction, device) sets a hard limit on the fraction of total GPU memory that PyTorch is allowed to allocate on a specific device. If a process attempts to exceed this fraction, an out-of-memory error is raised, preventing multi-tenant workloads on shared GPUs from starving other processes.",
+    "split": "train"
+  },
+  "doc_cuda_019": {
+    "title": "Checking Hardware Device Capabilities with get_device_properties",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.cuda.get_device_properties.html",
+    "text": "torch.cuda.get_device_properties(device) returns a _CudaDeviceProperties object containing physical hardware specifications for the GPU, including total_memory in bytes, major and minor compute capability (e.g., 8.6 for Ampere RTX 3050), multi_processor_count, and device name.",
+    "split": "train"
+  },
+  "doc_cuda_020": {
+    "title": "Device Initialization Overhead and Lazy Context Creation",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html",
+    "text": "PyTorch initializes the CUDA driver context lazily upon the first CUDA call (such as torch.cuda.is_available() or tensor creation). Initializing the CUDA driver context consumes a baseline of 300-600 MB of VRAM for driver kernels and context tables before any user tensors are allocated.",
+    "split": "train"
+  },
+  "doc_cuda_021": {
+    "title": "Memory Summary Table with torch.cuda.memory_summary",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.memory_summary",
+    "text": "torch.cuda.memory_summary(device=None, abbreviated=False) generates a detailed multi-line string table summarizing current and peak allocated memory, reserved memory, active allocation block counts, and allocator segment statistics. It is the primary command for debugging unexpected VRAM growth.",
+    "split": "train"
+  },
+  "doc_cuda_022": {
+    "title": "Preventing Python Cyclic Garbage Collection Latency",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html",
+    "text": "In Python, circular references between model layers or custom loss functions prevent reference counts from dropping to zero. This delays tensor deallocation until the generational cyclic garbage collector runs (gc.collect()), causing transient spikes in GPU memory that can trigger sudden out-of-memory crashes.",
+    "split": "train"
+  },
+  "doc_cuda_023": {
+    "title": "CUDA Stream Context with torch.cuda.stream",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html#torch.cuda.stream",
+    "text": "torch.cuda.stream(stream) is a context manager that selects a specific CUDA stream for all enclosed PyTorch operations. Enclosed kernels and memory copies are automatically queued to that stream, enabling clean separation of pipeline stages such as background prefetching and forward computation.",
+    "split": "train"
+  },
+  "doc_cuda_024": {
+    "title": "PyTorch CUDA Graph Capture Overview",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#cuda-graphs",
+    "text": "CUDA Graphs record a sequence of CUDA operations as a static dependency graph rather than launching individual kernels from CPU one-by-one. Replaying a captured CUDA Graph dramatically reduces CPU driver launch overhead, particularly for small models with high launch latency, but requires static tensor addresses and shapes.",
+    "split": "train"
+  },
+  "doc_cuda_025": {
+    "title": "Memory Pool Management for CUDA Graphs",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#cuda-graphs",
+    "text": "Because CUDA Graph capture records static memory addresses, any memory allocated during graph capture must not be modified or reallocated outside the graph. PyTorch manages this using torch.cuda.graph_pool_handle() to create a private memory pool that persists across graph replay executions.",
+    "split": "train"
+  },
+  "doc_cuda_val_001": {
+    "title": "Understanding Windows Shared GPU Memory Spillover",
+    "topic": "cuda_memory",
+    "source_url": "https://learn.microsoft.com/en-us/windows-hardware/drivers/display/handling-memory-pressure-and-eviction",
+    "text": "On Windows systems running under WDDM (Windows Display Driver Model), when an application's VRAM allocation exceeds physical dedicated GPU memory, the driver does not immediately throw an OOM error. Instead, it silently pages tensor buffers into shared system RAM across PCIe. This causes an extreme 10x-50x degradation in training throughput rather than a crash.",
+    "split": "val"
+  },
+  "doc_cuda_val_002": {
+    "title": "torch.cuda.utilization and GPU Engine Load",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.cuda.utilization.html",
+    "text": "torch.cuda.utilization(device=None) returns the percentage of time over the past sample period during which one or more kernels were executing on the GPU. It queries device activity through NVML and measures compute core utilization rather than memory occupancy.",
+    "split": "val"
+  },
+  "doc_cuda_val_003": {
+    "title": "Tensor Core Support across Precision Types",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#tensorfloat-32-tf32-on-ampere-devices",
+    "text": "On NVIDIA Ampere GPUs (such as RTX 3050), Tensor Cores support FP16, BF16, and TensorFloat-32 (TF32). Setting torch.backends.cuda.matmul.allow_tf32 = True allows FP32 matrix multiplications to use TF32 tensor cores, accelerating linear layers by up to 3x with negligible precision loss.",
+    "split": "val"
+  },
+  "doc_cuda_val_004": {
+    "title": "cudaMemAdvise Unified Memory Primitives",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/cuda.html",
+    "text": "In architectures utilizing unified memory (Managed Memory), cudaMemAdvise hints to the driver where data should reside. While standard PyTorch primarily manages discrete device allocations, unified memory extensions use access advice to prefetch data to GPU before kernel execution.",
+    "split": "val"
+  },
+  "doc_cuda_test_001": {
+    "title": "Distinguishing Memory Allocation Out-of-Memory from Hardware Limits",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#cuda-out-of-memory",
+    "text": "When a 'CUDA out of memory' error occurs, PyTorch prints a traceback stating both the requested allocation size and the caching allocator state. If the error shows that free memory in reserved blocks is greater than the requested size, the failure is caused by memory fragmentation rather than total VRAM exhaustion.",
+    "split": "test"
+  },
+  "doc_cuda_test_002": {
+    "title": "Tuning expandable_segments in Caching Allocator",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf",
+    "text": "Setting expandable_segments:True in PYTORCH_CUDA_ALLOC_CONF configures the allocator to allocate virtual address space in large segments while mapping physical memory pages dynamically on demand. This virtually eliminates allocator memory fragmentation without needing max_split_size_mb tuning.",
+    "split": "test"
+  },
+  "doc_cuda_test_003": {
+    "title": "Measuring True Kernel Time via CUDA Events Synchronize",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.cuda.Event.html",
+    "text": "Because CUDA kernel launches are asynchronous on the host CPU, using Python's time.time() around a PyTorch forward pass measures only CPU launch time, not GPU execution time. Accurate GPU benchmarking requires recording two torch.cuda.Event objects, calling torch.cuda.synchronize(), and evaluating event_start.elapsed_time(event_end).",
+    "split": "test"
+  },
+  "doc_cuda_test_004": {
+    "title": "Understanding Page-Locked Memory Host Limits",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html",
+    "text": "Excessive allocation of pinned (page-locked) host memory via DataLoader(pin_memory=True) or Tensor.pin_memory() consumes physical system RAM that the operating system kernel cannot swap to disk. If pinned memory exceeds available physical RAM, overall system responsiveness severely degrades.",
+    "split": "test"
+  },
+  "doc_cuda_test_005": {
+    "title": "Managing Tensor Sub-Allocations with storage_offset and strides",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.storage.html",
+    "text": "Multiple PyTorch tensors created via slicing, reshaping, or transpose share the same underlying UntypedStorage block on the GPU, differing only in storage_offset, shape, and strides. An entire storage block remains pinned in VRAM as long as even a tiny slice tensor remains referenced in Python.",
+    "split": "test"
+  },
+  "doc_cuda_test_006": {
+    "title": "CUDA Context Destruction Semantics in Multiprocessing",
+    "topic": "cuda_memory",
+    "source_url": "https://pytorch.org/docs/stable/notes/multiprocessing.html#cuda-in-multiprocessing",
+    "text": "The CUDA driver does not support re-using a CUDA context across a fork() system call. In Python multiprocessing, if a parent process initializes CUDA before forking worker processes, child processes will fail or dead-lock when accessing the GPU. The multiprocessing start method must be set to 'spawn' instead.",
+    "split": "test"
+  },
+  "doc_dist_001": {
+    "title": "DistributedDataParallel Architecture and Execution Flow",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/ddp.html",
+    "text": "DistributedDataParallel (DDP) operates by spawning a separate Python process per GPU. Each process holds an exact replica of the model weights and processes an independent slice of the global batch. During the backward pass, autograd hooks trigger asynchronous all-reduce collective communications to average gradients across all processes concurrently with backward computation.",
+    "split": "train"
+  },
+  "doc_dist_002": {
+    "title": "Initializing the Distributed Environment with init_process_group",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.init_process_group",
+    "text": "torch.distributed.init_process_group initializes the default distributed process group. Key arguments include backend ('nccl' for NVIDIA GPUs, 'gloo' for CPU or cross-platform, or 'mpi'), init_method (such as 'env://' to read MASTER_ADDR, MASTER_PORT, RANK, and WORLD_SIZE from environment variables), and world_size indicating total participating worker processes.",
+    "split": "train"
+  },
+  "doc_dist_003": {
+    "title": "Selecting the NCCL Distributed Backend for CUDA",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#which-backend-to-use",
+    "text": "The NCCL (NVIDIA Collective Communications Library) backend provides highly optimized inter-GPU collective communication over NVLink and PCIe. It is the strongly recommended backend for multi-GPU training on NVIDIA hardware because it leverages hardware ring-based and tree-based all-reduce algorithms, bypassing host CPU overhead.",
+    "split": "train"
+  },
+  "doc_dist_004": {
+    "title": "Gloo Distributed Backend for CPU and Development",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#which-backend-to-use",
+    "text": "The Gloo backend supports both CPU and GPU collectives and works on Windows and Linux. While significantly slower than NCCL for multi-GPU communication due to lack of direct GPU-to-GPU kernel bypassing, Gloo is essential for multi-node CPU cluster training and multi-process unit testing on developer laptops.",
+    "split": "train"
+  },
+  "doc_dist_005": {
+    "title": "Understanding World Size and Rank",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.get_rank",
+    "text": "In PyTorch distributed training, world_size represents the total number of distinct processes participating in the job across all nodes. The global rank is a unique integer from 0 to world_size - 1 assigned to each process. The local_rank represents the device index of the process on its specific physical machine node.",
+    "split": "train"
+  },
+  "doc_dist_006": {
+    "title": "Collective Communication: all_reduce Primitive",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.all_reduce",
+    "text": "torch.distributed.all_reduce(tensor, op=ReduceOp.SUM) reduces tensor data across all processes in the group using a specified mathematical reduction operation (SUM, PRODUCT, MIN, MAX, or AVG) and distributes the final aggregated result back to every single process so that all workers hold identical tensors upon completion.",
+    "split": "train"
+  },
+  "doc_dist_007": {
+    "title": "Collective Communication: broadcast Primitive",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.broadcast",
+    "text": "torch.distributed.broadcast(tensor, src=0) copies the tensor contents from a single designated source rank process to all other participating processes in the group. It is commonly used at model initialization to broadcast rank 0's random seed or model weights to guarantee synchronized initial model parameters.",
+    "split": "train"
+  },
+  "doc_dist_008": {
+    "title": "Collective Communication: all_gather Primitive",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.all_gather",
+    "text": "torch.distributed.all_gather gathers tensors from all processes in the group and concatenates them into a list or tensor accessible on every process. In contrast to gather(), which collects tensors only on a designated destination rank, all_gather distributes the full collected set to all workers, commonly used for gathering validation metrics.",
+    "split": "train"
+  },
+  "doc_dist_009": {
+    "title": "Collective Communication: reduce_scatter Primitive",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.reduce_scatter",
+    "text": "torch.distributed.reduce_scatter reduces tensors across all processes (e.g., via sum) and scatters the reduced results in equal chunks across all ranks, such that rank i receives the i-th partition of the reduced tensor. It is a fundamental building block of the Zero Redundancy Optimizer (ZeRO) and FSDP.",
+    "split": "train"
+  },
+  "doc_dist_010": {
+    "title": "Gradient Bucketing in DistributedDataParallel",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/ddp.html#internal-design",
+    "text": "To hide communication latency, DDP groups model parameter gradients into buckets (configured via bucket_cap_mb, default 25MB). As soon as all gradients belonging to a bucket are computed in the backward pass, DDP immediately launches an asynchronous all-reduce collective for that bucket while autograd continues computing gradients for preceding layers.",
+    "split": "train"
+  },
+  "doc_dist_011": {
+    "title": "Handling Unused Parameters with find_unused_parameters",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html",
+    "text": "By default, DDP expects every model parameter to contribute to the loss in every forward pass. If conditional branching or freezing leaves certain parameters unused, their gradient buckets will never be marked ready, causing DDP to hang. Setting find_unused_parameters=True traverses autograd graph to identify unused parameters, but adds runtime overhead.",
+    "split": "train"
+  },
+  "doc_dist_012": {
+    "title": "Disabling Gradient Sync with DDP.no_sync()",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html#torch.nn.parallel.DistributedDataParallel.no_sync",
+    "text": "The model.no_sync() context manager temporarily disables gradient synchronization across DDP ranks. When accumulating gradients across multiple forward/backward micro-batches, wrapping intermediate accumulation steps inside no_sync() prevents expensive all-reduce calls on every micro-batch, synchronizing gradients only on the final step.",
+    "split": "train"
+  },
+  "doc_dist_013": {
+    "title": "DistributedSampler for Dataset Sharding",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.distributed.DistributedSampler",
+    "text": "torch.utils.data.distributed.DistributedSampler shards a dataset into non-overlapping subsets such that each DDP process loads a distinct partition of data. Crucially, sampler.set_epoch(epoch) must be called at the start of every epoch to ensure a deterministic, unique shuffle order across epochs while maintaining synchronized sample boundaries.",
+    "split": "train"
+  },
+  "doc_dist_014": {
+    "title": "Comparing DataParallel (DP) vs DistributedDataParallel (DDP)",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html#cuda-nn-dataparallel-instead-of-multiprocessing",
+    "text": "torch.nn.DataParallel is single-process and multi-threaded, meaning all GPU threads are constrained by Python's Global Interpreter Lock (GIL). Furthermore, DP replicates model weights on every forward pass and gathers all outputs onto GPU 0, creating severe GPU 0 memory imbalance. DDP uses multi-process execution with zero GIL contention and balanced all-reduce.",
+    "split": "train"
+  },
+  "doc_dist_015": {
+    "title": "Destroying Process Groups with destroy_process_group",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.destroy_process_group",
+    "text": "torch.distributed.destroy_process_group frees resources associated with the active distributed process group. Failing to call destroy_process_group at the conclusion of a training script can prevent TCP communication ports and NCCL communicators from closing cleanly, causing subsequent training launches to hang on port binding.",
+    "split": "train"
+  },
+  "doc_dist_016": {
+    "title": "Checking Distributed State with is_initialized and get_world_size",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.is_initialized",
+    "text": "torch.distributed.is_initialized() checks if the default process group has been initialized, allowing code to seamlessly handle both single-GPU and distributed runs. Helper functions torch.distributed.get_world_size() and torch.distributed.get_rank() query the cluster topology.",
+    "split": "train"
+  },
+  "doc_dist_017": {
+    "title": "Fully Sharded Data Parallel (FSDP) Overview",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html",
+    "text": "Fully Sharded Data Parallel (FSDP) shards model parameters, gradients, and optimizer states across all DDP ranks, implementing the ZeRO-3 paradigm. Unlike standard DDP which duplicates model parameters on every GPU, FSDP gathers full parameters on-demand via all-gather right before forward computation and discards them immediately after, enabling training of models larger than single-GPU VRAM.",
+    "split": "train"
+  },
+  "doc_dist_018": {
+    "title": "FSDP Sharding Strategies",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html#torch.distributed.fsdp.ShardingStrategy",
+    "text": "FSDP provides multiple ShardingStrategy options: FULL_SHARD (ZeRO-3, shards parameters, gradients, and optimizer states for maximum memory savings), SHARD_GRAD_OP (ZeRO-2, shards gradients and optimizer states while retaining parameters during forward), and NO_SHARD (replicates standard DDP behavior for baseline comparisons).",
+    "split": "train"
+  },
+  "doc_dist_019": {
+    "title": "FSDP Auto-Wrapping Policy",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html#torch.distributed.fsdp.FullyShardedDataParallel",
+    "text": "For FSDP to efficiently overlap all-gather communication with computation, the model must be wrapped into nested FSDP sub-units using an auto_wrap_policy (such as transformer_auto_wrap_policy). Wrapping individual transformer blocks allows FSDP to fetch parameters for block N+1 while computing block N, rather than gathering the entire model all at once.",
+    "split": "train"
+  },
+  "doc_dist_020": {
+    "title": "Mixed Precision Training in FSDP",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html#torch.distributed.fsdp.MixedPrecision",
+    "text": "FSDP natively integrates mixed precision via torch.distributed.fsdp.MixedPrecision. It allows independently specifying param_dtype (for forward/backward compute in FP16 or BF16), reduce_dtype (for all-reduce gradient communication), and buffer_dtype, keeping master optimizer weights in FP32 without needing an external autocast manager.",
+    "split": "train"
+  },
+  "doc_dist_021": {
+    "title": "Saving and Loading FSDP Checkpoints with StateDictType",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html#torch.distributed.fsdp.StateDictType",
+    "text": "FSDP supports multiple state dict types for checkpointing: FULL_STATE_DICT gathers un-sharded weights onto rank 0 for saving a standard single-file checkpoint, SHARDED_STATE_DICT saves each rank's individual shard to separate files in parallel, and LOCAL_STATE_DICT exposes raw local tensor storage for custom serialization pipelines.",
+    "split": "train"
+  },
+  "doc_dist_022": {
+    "title": "NCCL Communication Timeouts and Heartbeats",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html",
+    "text": "When calling init_process_group, setting timeout=datetime.timedelta(seconds=N) configures how long NCCL waits for a collective communication to complete before timing out and throwing an error. The default is 30 minutes; lowering timeout helps detect rank deadlocks or straggler nodes early in development.",
+    "split": "train"
+  },
+  "doc_dist_023": {
+    "title": "Setting Device Affinity per Rank",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/ddp.html",
+    "text": "In a typical multi-GPU DDP setup, each spawned worker process must set its local CUDA device immediately using torch.cuda.set_device(local_rank) before wrapping the model in DDP. Failing to set the device causes all spawned processes to allocate tensors on GPU 0, triggering severe contention and immediate out-of-memory errors.",
+    "split": "train"
+  },
+  "doc_dist_024": {
+    "title": "PyTorch torchrun Utility Overview",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/elastic/run.html",
+    "text": "torchrun (Torch Elastic) is the official launch CLI for distributed PyTorch programs. It automatically manages process spawning, allocates local ranks, monitors worker health, exports MASTER_ADDR and MASTER_PORT environment variables, and orchestrates automatic restart upon single-worker failure.",
+    "split": "train"
+  },
+  "doc_dist_025": {
+    "title": "Barrier Synchronization with torch.distributed.barrier",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.barrier",
+    "text": "torch.distributed.barrier() blocks all processes in the group until every process has reached the barrier call. It is used to coordinate shared operations, such as ensuring rank 0 finishes downloading or tokenizing a dataset from disk before other ranks attempt to load it.",
+    "split": "train"
+  },
+  "doc_dist_val_001": {
+    "title": "DDP Gradient Synchronization Averaging Formula",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/ddp.html",
+    "text": "During the backward pass of DDP, all-reduce performs a summation across all ranks, and DDP divides the resulting sum by world_size to compute the true average gradient: grad = sum(grad_i) / world_size. Because of this built-in division, users must not divide loss by world_size manually, otherwise gradients would be scaled down twice.",
+    "split": "val"
+  },
+  "doc_dist_val_002": {
+    "title": "Custom Subgroups with torch.distributed.new_group",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.new_group",
+    "text": "torch.distributed.new_group(ranks=...) creates a distinct ProcessGroup consisting of a subset of participating ranks. Subgroups enable hybrid parallelism models (such as Pipeline Parallelism or Tensor Parallelism within a node while performing Data Parallelism across nodes) by restricting collective communication scopes.",
+    "split": "val"
+  },
+  "doc_dist_val_003": {
+    "title": "Async Collectives with async_op=True",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.all_reduce",
+    "text": "Collective operations accept async_op=True, which returns a Work request handle immediately without blocking the host thread. The calling code can perform independent computations and later call work_handle.wait() to block until the communication kernel finishes, maximizing compute-communication overlap.",
+    "split": "val"
+  },
+  "doc_dist_val_004": {
+    "title": "P2P Communication Primitives: send and recv",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#torch.distributed.send",
+    "text": "In addition to collective operations involving all ranks, PyTorch supports point-to-point (P2P) communication primitives torch.distributed.send(tensor, dst) and torch.distributed.recv(tensor, src). P2P communications are synchronous by default (or asynchronous via isend and irecv) and form the foundation of pipeline parallelism.",
+    "split": "val"
+  },
+  "doc_dist_test_001": {
+    "title": "Diagnosing NCCL Silent Deadlocks and Hangs",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/distributed.html#troubleshooting",
+    "text": "Distributed training jobs frequently hang indefinitely if one process encounters a CPU exception, diverges into a different code path, or evaluates an un-synchronized if condition. Setting TORCH_DISTRIBUTED_DEBUG=DETAIL and NCCL_DEBUG=INFO forces PyTorch and NCCL to log detailed flight records of collective mismatches.",
+    "split": "test"
+  },
+  "doc_dist_test_002": {
+    "title": "FSDP CPU Offloading Strategy with CPUOffload",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/fsdp.html#torch.distributed.fsdp.CPUOffload",
+    "text": "torch.distributed.fsdp.CPUOffload(offload_params=True) offloads sharded model parameters and gradients to host CPU system memory when layers are inactive, streaming weights back to GPU memory only when that specific sub-unit executes. While reducing GPU VRAM to the bare minimum, PCIe bandwidth becomes the primary bottleneck.",
+    "split": "test"
+  },
+  "doc_dist_test_003": {
+    "title": "DDP Determinism and Seed Synchronization Across Ranks",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/randomness.html",
+    "text": "In DDP, random seeds for model weight initialization must be identical across all ranks to ensure identical starting parameters, but random seeds for data augmentation must differ across ranks to prevent duplicate training samples. Calling torch.manual_seed(base_seed + rank) guarantees distinct sample paths while preserving determinism.",
+    "split": "test"
+  },
+  "doc_dist_test_004": {
+    "title": "Broadcast Model Buffers Parameter in DDP",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html",
+    "text": "By default, DDP synchronizes model buffers (such as running_mean and running_var in BatchNorm layers) from rank 0 to all ranks at the beginning of each forward pass via broadcast_buffers=True. Disabling broadcast_buffers=False skips this synchronization step when running networks without batch normalization layers.",
+    "split": "test"
+  },
+  "doc_dist_test_005": {
+    "title": "Understanding NCCL Ring-AllReduce Latency Characteristics",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/notes/ddp.html",
+    "text": "NCCL uses a ring-based or tree-based all-reduce algorithm. In a ring all-reduce with N processes, total data transferred per process is 2 * (N - 1) / N * S, where S is tensor size. As N grows large, per-worker data transfer approaches 2 * S, making communication time asymptotically independent of the number of GPUs for bandwidth-dominated messages.",
+    "split": "test"
+  },
+  "doc_dist_test_006": {
+    "title": "Handling Dynamic Graph Execution with DDP static_graph",
+    "topic": "distributed",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html",
+    "text": "If a neural network has a completely static computation graph across training iterations, passing static_graph=True to DDP allows it to pre-calculate all gradient bucket assignments on the first iteration and lock them permanently. This removes per-iteration autograd graph hook overhead and supports unused parameters automatically.",
+    "split": "test"
+  },
+  "doc_comp_001": {
+    "title": "torch.compile Architecture and Pipeline Overview",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "torch.compile is the primary interface for PyTorch 2.x graph compilation. Under the hood, it coordinates three core subsystems: TorchDynamo intercepts Python frame execution to capture FX graphs, AOTAutograd captures forward and backward graphs before code generation, and TorchInductor compiles the captured FX graph into optimized Triton kernels for NVIDIA GPUs or C++ OpenMP code for CPUs.",
+    "split": "train"
+  },
+  "doc_comp_002": {
+    "title": "TorchDynamo Frame Evaluation Hook",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_dynamo_overview.html",
+    "text": "TorchDynamo works at the Python C-API level using PEP 523 frame evaluation hooks. It parses Python bytecode just before execution, tracing PyTorch tensor operations into clean FX computational graphs while passing arbitrary, unsupported Python constructs (like external C libraries or print statements) back to the standard Python interpreter.",
+    "split": "train"
+  },
+  "doc_comp_003": {
+    "title": "Understanding Graph Breaks in torch.compile",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html#graph-breaks",
+    "text": "A graph break occurs when TorchDynamo encounters Python code it cannot safely symbolically analyze, such as data-dependent Python control flow (e.g., if tensor.item() > 0), access to unsupported global variables, or calls to un-traceable C extension functions. A graph break splits the computational graph into multiple smaller sub-graphs, returning execution to the Python interpreter between them and degrading kernel fusion opportunities.",
+    "split": "train"
+  },
+  "doc_comp_004": {
+    "title": "Diagnosing Graph Breaks with torch._dynamo.explain",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html#diagnosing-graph-breaks",
+    "text": "torch._dynamo.explain(fn)(*inputs) analyzes a callable function or model and outputs an explanation of any graph breaks encountered. It returns the number of generated subgraphs, a list of specific operations triggering graph breaks, and the exact lines of user source code causing them.",
+    "split": "train"
+  },
+  "doc_comp_005": {
+    "title": "TorchInductor Deep-Learning Compiler Backend",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html#torchinductor",
+    "text": "TorchInductor is the default deep learning compiler backend for torch.compile. It takes the FX graph produced by AOTAutograd and performs operator fusion, eliminating memory read-write bandwidth bottlenecks by fusing consecutive elementwise and reduction operations directly into unified GPU Triton kernels.",
+    "split": "train"
+  },
+  "doc_comp_006": {
+    "title": "torch.compile Compilation Modes: default, reduce-overhead, max-autotune",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.compile.html",
+    "text": "torch.compile accepts a mode argument: 'default' balances compilation latency and speedup; 'reduce-overhead' uses CUDA Graphs to eliminate CPU launch overhead (ideal for small batch sizes, but increases memory usage); and 'max-autotune' spends significant time benchmarking alternative Triton kernel implementations and matrix multiplication algorithms to find the fastest possible code.",
+    "split": "train"
+  },
+  "doc_comp_007": {
+    "title": "Dynamic Shapes Support with dynamic=True",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_dynamic_shapes.html",
+    "text": "By default, torch.compile compiles graphs assuming tensor dimensions are static. If input batch sizes or sequence lengths vary between iterations, it triggers recompilations. Setting dynamic=True instructs TorchDynamo to compile symbolic dynamic shapes, generating kernels that accept variable dimension sizes without recompiling for every new shape.",
+    "split": "train"
+  },
+  "doc_comp_008": {
+    "title": "AOTAutograd Ahead-of-Time Differentiation",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html#aotautograd",
+    "text": "AOTAutograd captures not just the forward graph, but also traces through PyTorch's autograd engine to produce an explicit joint forward-backward computational graph ahead of execution. This allows backends like TorchInductor to optimize and fuse memory operations across forward and backward passes simultaneously.",
+    "split": "train"
+  },
+  "doc_comp_009": {
+    "title": "Automatic Mixed Precision (AMP) Overview",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html",
+    "text": "Automatic Mixed Precision (torch.amp) trains deep learning models using a combination of FP32 and lower-precision formats (FP16 or BF16). It accelerates compute-heavy operations like matrix multiplications and convolutions on Tensor Cores while preserving numerical stability by computing sensitive reductions and loss functions in full FP32.",
+    "split": "train"
+  },
+  "doc_comp_010": {
+    "title": "torch.autocast Context Manager Semantics",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.autocast",
+    "text": "torch.autocast(device_type='cuda', dtype=torch.float16) is a context manager that allows operations inside its block to run in an automatically chosen precision. Autocast maintains internal whitelists and blacklists: linear layers and convolutions run in FP16, while exponentiations, log functions, and softmax run in FP32 to prevent underflow.",
+    "split": "train"
+  },
+  "doc_comp_011": {
+    "title": "Gradient Scaling with torch.amp.GradScaler",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.amp.GradScaler",
+    "text": "In FP16 training, small gradient values can underflow to zero. torch.amp.GradScaler prevents underflow by multiplying the forward loss by a scale factor before calling backward(). Gradients are computed on the scaled loss, and then unscaled by the same factor back to their true values immediately before the optimizer updates model weights.",
+    "split": "train"
+  },
+  "doc_comp_012": {
+    "title": "GradScaler Step and Update Execution Cycle",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.amp.GradScaler.step",
+    "text": "When using GradScaler, one calls scaler.scale(loss).backward(), followed by scaler.step(optimizer), and finally scaler.update(). scaler.step() inspects the unscaled gradients for Inf or NaN values: if found, the optimizer step is skipped to protect model parameters, and scaler.update() halves the loss scale factor for the next iteration.",
+    "split": "train"
+  },
+  "doc_comp_013": {
+    "title": "GradScaler unscale_ Method for Gradient Clipping",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.amp.GradScaler.unscale_",
+    "text": "If gradient clipping (such as torch.nn.utils.clip_grad_norm_) is required, one must explicitly call scaler.unscale_(optimizer) before clipping. This converts the scaled gradients back to their true magnitude so that the calculated norm reflects actual gradients rather than inflated scaled values.",
+    "split": "train"
+  },
+  "doc_comp_014": {
+    "title": "BFloat16 vs Float16 Precision Characteristics",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#bfloat16-presentation",
+    "text": "BFloat16 has an 8-bit exponent and 7-bit mantissa, giving it the exact same dynamic range as standard FP32, whereas Float16 has only a 5-bit exponent and 10-bit mantissa. Because BF16 does not suffer from gradient underflow in typical deep learning models, training in BF16 on Ampere GPUs (like RTX 3050) generally does not require a GradScaler.",
+    "split": "train"
+  },
+  "doc_comp_015": {
+    "title": "Gradient Clipping with torch.nn.utils.clip_grad_norm_",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html",
+    "text": "torch.nn.utils.clip_grad_norm_(parameters, max_norm, norm_type=2.0) clips the global gradient norm of an iterable of parameters. It computes the total L2 norm across all parameter gradients as if concatenated into a single vector, and if the total norm exceeds max_norm, scales all gradients down by max_norm / total_norm to prevent exploding gradients.",
+    "split": "train"
+  },
+  "doc_comp_016": {
+    "title": "Gradient Clipping by Value with clip_grad_value_",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_value_.html",
+    "text": "torch.nn.utils.clip_grad_value_(parameters, clip_value) clips parameter gradients elementwise to the range [-clip_value, clip_value]. Unlike clip_grad_norm_, it does not preserve the directional angle of the gradient vector in parameter space.",
+    "split": "train"
+  },
+  "doc_comp_017": {
+    "title": "Kernel Fusion Benefits in Memory-Bound Architectures",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "Most modern deep learning operations (LayerNorm, GELU, residual addition, dropout) are memory bandwidth bound rather than compute bound. In eager PyTorch, each operation requires loading tensor data from high-bandwidth GPU memory (HBM) into SRAM and writing it back out. Inductor fuses these into a single kernel, keeping data in fast on-chip SRAM cache throughout.",
+    "split": "train"
+  },
+  "doc_comp_018": {
+    "title": "Disabling Compilation for Submodules with torch._dynamo.disable",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_fine_grain_apis.html",
+    "text": "torch._dynamo.disable(fn) is a decorator that instructs TorchDynamo to skip graph tracing for a specific function or module, running it directly in standard Python eager mode. This is useful for isolating third-party libraries, complex logging code, or debugging layers without aborting compilation of the rest of the model.",
+    "split": "train"
+  },
+  "doc_comp_019": {
+    "title": "CUDAGraph Trees Integration in torch.compile",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "When mode='reduce-overhead' is selected, TorchInductor uses CUDAGraph Trees to manage and record CUDA graphs for multiple dynamic branches. This eliminates kernel launch latency by executing entire forward and backward passes via hardware-level graph replays.",
+    "split": "train"
+  },
+  "doc_comp_020": {
+    "title": "Warmup and Recompilation Overhead",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html",
+    "text": "The first execution of a compiled PyTorch model is significantly slower than eager mode because TorchDynamo must trace bytecode, AOTAutograd builds backward graphs, and TorchInductor generates and compiles Triton kernels. Once warm, subsequent iterations execute compiled kernels at peak speed.",
+    "split": "train"
+  },
+  "doc_comp_021": {
+    "title": "Tracing Recompilations with TORCH_LOGS=recompiles",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html",
+    "text": "Setting the environment variable TORCH_LOGS=recompiles forces TorchDynamo to log a detailed message whenever an FX graph is recompiled. It explains the exact guard failure (such as unexpected input shapes, modified tensor strides, or global variable value changes) that invalidated the cached kernel.",
+    "split": "train"
+  },
+  "doc_comp_022": {
+    "title": "TorchFX Graph Manipulation and Node Structure",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/fx.html",
+    "text": "TorchFX represents PyTorch computations as an explicit graph of Node objects. Nodes represent call_function, call_method, call_module, get_attr, placeholder (inputs), and output. FX graph transformations can insert quantizers, prune layers, or fuse operations programmatically prior to code generation.",
+    "split": "train"
+  },
+  "doc_comp_023": {
+    "title": "Autocast Custom Operators with custom_fwd and custom_bwd",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.cuda.amp.custom_fwd",
+    "text": "When writing custom torch.autograd.Function classes for use in AMP training, decorating forward with @torch.cuda.amp.custom_fwd(cast_inputs=torch.float16) and backward with @torch.cuda.amp.custom_bwd ensures inputs are automatically cast to the appropriate precision and gradients are scaled consistently with surrounding autocast contexts.",
+    "split": "train"
+  },
+  "doc_comp_024": {
+    "title": "Triton Compiler Integration in Inductor",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "TorchInductor generates OpenAI Triton code for GPU backends. Triton provides an intermediate programming model between high-level Python and low-level CUDA C++, allowing Inductor to generate highly optimized blocked GPU algorithms with automated register allocation and shared memory management.",
+    "split": "train"
+  },
+  "doc_comp_025": {
+    "title": "Managing Incompatible Eager-Mode Code: torch._dynamo.assume_constant_result",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_fine_grain_apis.html",
+    "text": "torch._dynamo.assume_constant_result(fn) is a decorator that tells TorchDynamo to evaluate a non-traceable function once during initial tracing and embed the returned value as a static constant into the FX graph, avoiding graph breaks on static configuration checks.",
+    "split": "train"
+  },
+  "doc_comp_val_001": {
+    "title": "Guards Mechanism in TorchDynamo",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_dynamo_overview.html",
+    "text": "Along with compiling an FX graph, TorchDynamo generates a list of Guards. Guards are lightweight boolean checks (verifying tensor tensor shapes, data types, device locations, and Python global values) executed before invoking compiled code. If all guards pass, the compiled kernel is invoked; if any guard fails, TorchDynamo falls back to re-tracing or eager execution.",
+    "split": "val"
+  },
+  "doc_comp_val_002": {
+    "title": "Autocast Thread Locality and Nesting",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.autocast",
+    "text": "torch.autocast instances are thread-local and can be safely nested. Inside a torch.autocast(device_type='cuda', dtype=torch.float16) block, one can nest an inner torch.autocast(device_type='cuda', enabled=False) block to explicitly force a critical numerical calculation to execute strictly in full FP32.",
+    "split": "val"
+  },
+  "doc_comp_val_003": {
+    "title": "Inductor CPP Wrapper for Minimal Python Overhead",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "Setting torch._inductor.config.cpp_wrapper = True configures TorchInductor to generate a standalone C++ wrapper around compiled Triton and C++ kernels instead of invoking them through Python ctypes. This strips away all remaining Python dispatch overhead, delivering near-C++ latencies.",
+    "split": "val"
+  },
+  "doc_comp_val_004": {
+    "title": "GradScaler State Dict Serialization",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#torch.amp.GradScaler.state_dict",
+    "text": "torch.amp.GradScaler maintains dynamic internal state, including the current scale factor and consecutive unskipped iteration count. It implements state_dict() and load_state_dict() so its state can be saved into training checkpoints alongside model and optimizer weights, preventing scale divergence upon resume.",
+    "split": "val"
+  },
+  "doc_comp_test_001": {
+    "title": "Diagnosing Autocast Underflow and Loss Divergence",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/amp.html#troubleshooting",
+    "text": "If a model trained with FP16 autocast diverges or produces NaN loss, the primary cause is typically gradient underflow or overflow in unsupported custom operations. If GradScaler's scale factor repeatedly halves until reaching minimum values (e.g., 1e-4), it indicates that gradients are consistently encountering Inf or NaN values during backward.",
+    "split": "test"
+  },
+  "doc_comp_test_002": {
+    "title": "Why torch.compile Can Hang with CUDA Graphs on Variable Sequences",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_troubleshooting.html",
+    "text": "Using mode='reduce-overhead' relies on CUDA Graphs, which require fixed virtual memory buffers and static tensor sizes. If input sequence lengths vary across batches without padding or dynamic shape configuration, CUDA Graph replay attempts to access un-allocated addresses or triggers catastrophic memory thrashing.",
+    "split": "test"
+  },
+  "doc_comp_test_003": {
+    "title": "Memory Savings Mechanism of TorchInductor Horizontal Fusion",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "TorchInductor performs horizontal kernel fusion, grouping multiple independent tensor operations sharing the same input or memory access pattern into a single parallel loop. This minimizes global memory read passes across PCIe and HBM, reducing peak memory bandwidth demand by up to 40%.",
+    "split": "test"
+  },
+  "doc_comp_test_004": {
+    "title": "Correct Sequencing for GradScaler with Gradient Accumulation",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/notes/amp_examples.html#gradient-accumulation",
+    "text": "When combining GradScaler with gradient accumulation over K steps, one must call scaler.scale(loss / K).backward() on every micro-batch, but only call scaler.step(optimizer) and scaler.update() once every K steps. Calling scaler.update() on intermediate micro-batches will prematurely adjust the scale factor and corrupt accumulated gradients.",
+    "split": "test"
+  },
+  "doc_comp_test_005": {
+    "title": "Dynamic Shapes Guard Specialization Penalties",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler_dynamic_shapes.html",
+    "text": "When dynamic=False, TorchDynamo specializes kernels to exact dimension values (e.g., batch size 16, sequence 128). If a batch of size 15 arrives, guard evaluation fails, forcing an expensive recompilation. After several recompilations, Dynamo defaults to dynamic shape generalization, but the recompilation pauses cause latency spikes.",
+    "split": "test"
+  },
+  "doc_comp_test_006": {
+    "title": "AOTAutograd Memory Consumption during Forward-Backward Graph Synthesis",
+    "topic": "compilation_optimization",
+    "source_url": "https://pytorch.org/docs/stable/torch.compiler.html",
+    "text": "Because AOTAutograd builds a joint forward-backward computational graph ahead of execution, it must trace symbolic backward activations. For extremely large models, the symbolic memory graph creation itself can consume substantial host CPU RAM during initial model compilation.",
+    "split": "test"
+  },
+  "doc_dl_001": {
+    "title": "PyTorch DataLoader Core Architecture",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "torch.utils.data.DataLoader is the central abstraction in PyTorch for data loading. It combines a Dataset with a Sampler and provides single- or multi-process iterative data loading, automatic batching, custom collate functions, memory pinning for fast GPU transfers, and background data prefetching.",
+    "split": "train"
+  },
+  "doc_dl_002": {
+    "title": "Map-Style Datasets vs Iterable-Style Datasets",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#dataset-types",
+    "text": "A map-style dataset implements __getitem__() and __len__(), representing a map from keys or indices to data samples, allowing random access and easy shuffling. An iterable-style dataset subclasses IterableDataset and implements __iter__(), representing a stream of data samples, ideal for streaming data from network sockets, database cursors, or datasets that cannot fit in local storage.",
+    "split": "train"
+  },
+  "doc_dl_003": {
+    "title": "Multi-Process Data Loading with num_workers",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#multi-process-data-loading",
+    "text": "Setting num_workers > 0 executes data loading asynchronously in child Python processes. Each worker process executes independently, fetching samples from the dataset and placing assembled batches onto an inter-process queue, allowing data loading and preprocessing to overlap with GPU model training.",
+    "split": "train"
+  },
+  "doc_dl_004": {
+    "title": "Preventing Worker Process Teardown with persistent_workers=True",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "By default, DataLoader worker processes are destroyed and respawned at the end of every epoch, which introduces significant startup overhead (re-allocating memory, reloading file handles, re-initializing libraries). Setting persistent_workers=True keeps the worker processes alive across epochs, keeping datasets in worker memory.",
+    "split": "train"
+  },
+  "doc_dl_005": {
+    "title": "Memory Pinning in DataLoader with pin_memory=True",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#memory-pinning",
+    "text": "When pin_memory=True, DataLoader automatically puts fetched tensor batches into page-locked host memory before returning them. This enables asynchronous host-to-device memory copies via cudaMemcpyAsync when subsequently moved to GPU using tensor.to(device='cuda', non_blocking=True).",
+    "split": "train"
+  },
+  "doc_dl_006": {
+    "title": "Custom Batch Assembly with collate_fn",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#dataloader-collate-fn",
+    "text": "collate_fn defines how a list of individual samples retrieved by the dataset should be merged into a single mini-batch tensor. The default collater converts Python numbers to tensors and stacks tensors along a new dimension. A custom collate_fn is necessary when handling variable-length sequences requiring dynamic padding or dictionaries of heterogeneous feature tensors.",
+    "split": "train"
+  },
+  "doc_dl_007": {
+    "title": "Seeding Worker Processes with worker_init_fn",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "When num_workers > 0, random number generators in external libraries (like NumPy, Python random, or OpenCV) inherit identical random states across all child worker processes upon process creation. Passing a custom worker_init_fn to DataLoader re-seeds these third-party generators using worker_id and torch.initial_seed() to avoid duplicate data augmentations.",
+    "split": "train"
+  },
+  "doc_dl_008": {
+    "title": "Controlling Queue Depth with prefetch_factor",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "prefetch_factor (default 2) controls the number of batches prefetched in advance by each worker process. For example, with num_workers=4 and prefetch_factor=2, a total of 8 batches are pre-loaded into memory queues. Increasing prefetch_factor can smooth out I/O latency spikes but increases host CPU RAM consumption.",
+    "split": "train"
+  },
+  "doc_dl_009": {
+    "title": "Subprocess Start Methods: fork vs spawn in Data Loading",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/notes/multiprocessing.html#contexts-and-start-methods",
+    "text": "On Linux, multiprocessing defaults to 'fork', which duplicates the process memory instantly using copy-on-write. On Windows, only 'spawn' is supported, which starts a fresh Python interpreter and re-imports modules. Code utilizing DataLoader with num_workers > 0 on Windows must always be protected under an if __name__ == '__main__': block.",
+    "split": "train"
+  },
+  "doc_dl_010": {
+    "title": "Memory Duplication Trap with Copy-on-Write on Linux",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/notes/multiprocessing.html",
+    "text": "Although the fork start method uses OS copy-on-write, Python's reference counting mechanism mutates object header memory whenever Python objects are traversed or read. This gradually dirties memory pages, breaking copy-on-write sharing and causing host RAM usage to multiply by the number of active DataLoader workers for large in-memory Python datasets.",
+    "split": "train"
+  },
+  "doc_dl_011": {
+    "title": "Custom Samplers and RandomSampler",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.RandomSampler",
+    "text": "PyTorch Sampler objects specify the sequence of indices used to query the dataset. RandomSampler samples elements randomly, with or without replacement. SequentialSampler yields indices sequentially in order. When shuffle=True is passed to DataLoader, it automatically creates a RandomSampler under the hood.",
+    "split": "train"
+  },
+  "doc_dl_012": {
+    "title": "WeightedRandomSampler for Class Imbalance",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.WeightedRandomSampler",
+    "text": "torch.utils.data.WeightedRandomSampler samples elements with specified probability weights. By assigning higher weights to underrepresented minority classes in a classification dataset, WeightedRandomSampler presents balanced batches to the model during training without requiring manual oversampling or undersampling.",
+    "split": "train"
+  },
+  "doc_dl_013": {
+    "title": "BatchSampler Wrapper Overview",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.BatchSampler",
+    "text": "BatchSampler wraps an underlying index Sampler to yield a mini-batch of indices at a time. This allows custom batching strategies, such as grouping sentences of similar token length together (bucketing) to minimize padding tokens inside each mini-batch.",
+    "split": "train"
+  },
+  "doc_dl_014": {
+    "title": "Handling Last Incomplete Batches with drop_last",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "Setting drop_last=True instructs DataLoader to drop the final batch of the epoch if its size is smaller than batch_size. This prevents unexpected shape mismatches in downstream operations (like BatchNorm layers requiring batch_size > 1 or static compiled graphs) that cannot handle variable-sized trailing batches.",
+    "split": "train"
+  },
+  "doc_dl_015": {
+    "title": "Multi-Process Sharding for IterableDataset with get_worker_info",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.get_worker_info",
+    "text": "When an IterableDataset is loaded with num_workers > 0, each worker process executes an exact replica of the dataset iterator, yielding duplicated samples unless explicitly sharded. Inside the dataset's __iter__(), calling torch.utils.data.get_worker_info() allows the worker to query its worker_id and num_workers to partition the data stream.",
+    "split": "train"
+  },
+  "doc_dl_016": {
+    "title": "Dataset Chaining with ChainDataset",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.ChainDataset",
+    "text": "torch.utils.data.ChainDataset concatenates multiple IterableDatasets into a single continuous stream. It is particularly useful for chaining multiple streaming file shards or log streams into a single dataset iterator without loading them into memory at once.",
+    "split": "train"
+  },
+  "doc_dl_017": {
+    "title": "Dataset Concatenation with ConcatDataset",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.ConcatDataset",
+    "text": "torch.utils.data.ConcatDataset concatenates multiple map-style datasets into a single unified dataset. The overall length is the sum of the constituent datasets, and indexing into ConcatDataset transparently maps the index to the appropriate constituent dataset.",
+    "split": "train"
+  },
+  "doc_dl_018": {
+    "title": "Subsetting Datasets with Subset and random_split",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.random_split",
+    "text": "torch.utils.data.random_split randomly partitions a dataset into non-overlapping new datasets of given lengths. It returns a list of Subset objects that reference the original dataset by index, preserving underlying storage without duplicating samples.",
+    "split": "train"
+  },
+  "doc_dl_019": {
+    "title": "TensorDataset for Simple In-Memory Tensors",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.TensorDataset",
+    "text": "torch.utils.data.TensorDataset wraps a collection of tensors with matching first dimensions. Indexing retrieves a tuple of corresponding tensor slices along dimension 0. It is the standard utility for creating lightweight datasets from existing memory arrays.",
+    "split": "train"
+  },
+  "doc_dl_020": {
+    "title": "Sharing PyTorch Tensors via Shared Memory in Multiprocessing",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/notes/multiprocessing.html#sharing-cuda-tensors",
+    "text": "When PyTorch sends CPU tensors between worker processes via queues, it automatically moves tensor storage to shared memory (POSIX shared memory on Linux or named memory mappings on Windows) and passes a shared memory handle, avoiding serialized copying of raw data buffers.",
+    "split": "train"
+  },
+  "doc_dl_021": {
+    "title": "Diagnosing Shared Memory Exhaustion (dev/shm)",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#multi-process-data-loading",
+    "text": "In multi-worker data loading, passing large CPU tensors through multiprocessing queues can exhaust the operating system shared memory buffer (such as /dev/shm in Linux Docker containers), causing 'RuntimeError: DataLoader worker (pid ...) is killed by signal: Bus error'. Increasing container shm-size or setting num_workers=0 resolves this.",
+    "split": "train"
+  },
+  "doc_dl_022": {
+    "title": "pin_memory_device Configuration for Specific GPUs",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "In multi-GPU environments, the pin_memory_device argument specifies which specific CUDA device the host memory should be pinned for (e.g., pin_memory_device='cuda:1'). This guarantees that DMA transfers are routed directly to the target GPU rather than the default device.",
+    "split": "train"
+  },
+  "doc_dl_023": {
+    "title": "Custom Pin Memory Logic with PinMemoryHook",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html",
+    "text": "PyTorch allows custom types and complex data structures returned by collate_fn to support memory pinning by implementing a custom pin_memory() method on the class or registering a pin_memory hook, enabling deep pinning of nested dictionary and list structures.",
+    "split": "train"
+  },
+  "doc_dl_024": {
+    "title": "Automatic Batching vs Non-Automatic Batching in DataLoader",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#loading-batched-and-non-batched-data",
+    "text": "When batch_size is None and batch_sampler is None, DataLoader turns off automatic batching. Instead of loading individual samples and collating them, DataLoader yields individual items directly from the dataset. This is common when the dataset itself loads chunks of pre-batched data from columnar formats.",
+    "split": "train"
+  },
+  "doc_dl_025": {
+    "title": "Timeout Parameter for Worker Deadlock Detection",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "The timeout parameter sets a maximum duration in seconds that DataLoader waits to receive a batch from worker processes before raising a RuntimeError. Setting a positive timeout prevents the training loop from hanging indefinitely if a worker hangs on network I/O or deadlocks on file locks.",
+    "split": "train"
+  },
+  "doc_dl_val_001": {
+    "title": "Multiprocessing File Descriptor Limits on Linux",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/multiprocessing.html#file-system-file-descriptor",
+    "text": "PyTorch's multiprocessing sharing strategy defaults to 'file_descriptor' on Linux, where each shared tensor consumes a file descriptor. When loading datasets with thousands of small tensors, worker processes can exceed the OS open file limit, crashing with 'Too many open files'. Switching the sharing strategy to 'file_system' via torch.multiprocessing.set_sharing_strategy('file_system') resolves this.",
+    "split": "val"
+  },
+  "doc_dl_val_002": {
+    "title": "Custom Sampler Yielding Batch Indices Directly",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.Sampler",
+    "text": "When implementing a custom BatchSampler, the __iter__ method must yield a list of integer indices for each batch. DataLoader passes the entire list of indices to the Dataset or Sampler in one shot, allowing optimized multi-index disk reads (such as PyArrow or HDF5 chunk reads) rather than one-by-one queries.",
+    "split": "val"
+  },
+  "doc_dl_val_003": {
+    "title": "DataLoader multiprocessing_context Argument",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "The multiprocessing_context argument allows explicitly choosing the Python multiprocessing context ('fork', 'spawn', or 'forkserver') used to spawn DataLoader worker processes, overriding the global system default. Passing a 'spawn' context on Linux ensures safe initialization for CUDA-enabled worker pre-processing.",
+    "split": "val"
+  },
+  "doc_dl_val_004": {
+    "title": "Worker Shutdown Sequence and SIGCHLD Handling",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html",
+    "text": "When a DataLoader iterator is garbage collected, PyTorch cleanly terminates child worker processes by sending them termination events and closing queue pipes. If an unhandled exception occurs in a worker, PyTorch intercepts the SIGCHLD signal and raises a descriptive Exception in the main training process.",
+    "split": "val"
+  },
+  "doc_dl_test_001": {
+    "title": "Fixing Duplicate Augmentations in Multi-Worker DataLoaders",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/notes/randomness.html#dataloader",
+    "text": "If a PyTorch DataLoader uses num_workers > 0 and applies random transforms with random.random() or np.random.rand(), every worker will generate identical sequences of random numbers unless seeded explicitly. The official fix is defining worker_init_fn that sets np.random.seed(worker_seed) derived from torch.initial_seed().",
+    "split": "test"
+  },
+  "doc_dl_test_002": {
+    "title": "Why pin_memory Fails or Slows Down on Non-Contiguous Tensors",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.Tensor.pin_memory.html",
+    "text": "pin_memory() creates a page-locked copy of a tensor. If a tensor produced by collate_fn is non-contiguous in memory (e.g., from strided slices or transposes), PyTorch must allocate a contiguous buffer and copy elements before pinning, adding unexpected CPU overhead to every batch.",
+    "split": "test"
+  },
+  "doc_dl_test_003": {
+    "title": "IterableDataset Sharding Bug in Multi-Worker DataLoader",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.IterableDataset",
+    "text": "A common bug with IterableDataset is setting num_workers=4 without partitioning data in __iter__(). Because each worker process simply instantiates the dataset and iterates it from the beginning, the model receives 4 identical copies of every training sample, effectively corrupting training without throwing any errors.",
+    "split": "test"
+  },
+  "doc_dl_test_004": {
+    "title": "Optimizing prefetch_factor for Low Latency vs High RAM",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader",
+    "text": "If prefetch_factor is set too high, worker processes pre-load dozens of large batches into CPU RAM. If batches consist of high-resolution images or long text embeddings, this can quickly trigger operating system Out-Of-Memory (OOM) killer terminations. Tuning prefetch_factor=1 or 2 balances pipeline smoothness with bounded memory.",
+    "split": "test"
+  },
+  "doc_dl_test_005": {
+    "title": "Windows Multiprocessing Name Guard Requirement",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/notes/windows.html#multiprocessing-error-without-if-clause-protection",
+    "text": "Because Windows uses the spawn start method for multiprocessing, child worker processes re-import the main script from top to bottom. If the DataLoader creation and training loop are not guarded inside if __name__ == '__main__':, each child process will attempt to spawn further child processes recursively, crashing the system in an infinite fork bomb.",
+    "split": "test"
+  },
+  "doc_dl_test_006": {
+    "title": "Custom PyTorch Collate Function for Padding Varied Lengths",
+    "topic": "dataloader_io",
+    "source_url": "https://pytorch.org/docs/stable/data.html#dataloader-collate-fn",
+    "text": "When samples have variable sequence lengths, standard torch.stack fails with a shape mismatch error. A custom collate_fn uses torch.nn.utils.rnn.pad_sequence([sample['input_ids'] for sample in batch], batch_first=True, padding_value=0) to dynamically pad all items in the batch to the maximum length of that specific batch.",
+    "split": "test"
+  },
+  "doc_sys_001": {
+    "title": "Python Global Interpreter Lock (GIL) Mechanics",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/c-api/init.html#thread-state-and-the-global-interpreter-lock",
+    "text": "The Python Global Interpreter Lock (GIL) is a mutex that prevents multiple native threads from executing Python bytecode simultaneously. While PyTorch releases the GIL during heavy C++ and CUDA tensor operations (allowing background threads to queue GPU kernels), pure Python loops, data parsing, and dictionary lookups remain constrained to single-core execution.",
+    "split": "train"
+  },
+  "doc_sys_002": {
+    "title": "Python 3.13 Free-Threaded Build and sys._is_gil_enabled",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/library/sys.html#sys._is_gil_enabled",
+    "text": "Python 3.13 introduced experimental support for running without the Global Interpreter Lock (PEP 703, free-threaded build). In free-threaded Python builds, sys._is_gil_enabled() returns False when the GIL is disabled, enabling true multi-threaded Python execution across multiple CPU cores without multiprocessing overhead.",
+    "split": "train"
+  },
+  "doc_sys_003": {
+    "title": "Python Reference Counting and sys.getrefcount",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/library/sys.html#sys.getrefcount",
+    "text": "CPython's primary memory management uses reference counting. Each Python object header stores an ob_refcnt integer. When a reference to an object is created, the count increments; when a reference goes out of scope, it decrements. When ob_refcnt drops to zero, the object's memory is deallocated immediately, invoking tensor C++ destructors.",
+    "split": "train"
+  },
+  "doc_sys_004": {
+    "title": "Scaled Dot-Product Attention (SDPA) Architecture",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html",
+    "text": "torch.nn.functional.scaled_dot_product_attention (SDPA) computes mathematically: Attention(Q, K, V) = softmax(Q * K^T / sqrt(d_k) + M) * V. Instead of executing separate matrix multiplications, scaling, softmax, and dropout operations in eager Python, SDPA dispatches to fused hardware kernels that reduce memory bandwidth requirements.",
+    "split": "train"
+  },
+  "doc_sys_005": {
+    "title": "SDPA Backend Implementations: FlashAttention, Efficient Attention, Math",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html",
+    "text": "PyTorch SDPA selects between three hardware backends: FlashAttention (fused I/O-aware tiling for NVIDIA Ampere and newer GPUs), Efficient Attention / Memory-Efficient Attention (Cutlass implementation supporting older GPUs and arbitrary bias shapes), and Math (un-fused reference PyTorch implementation used as fallback).",
+    "split": "train"
+  },
+  "doc_sys_006": {
+    "title": "Configuring SDPA Backends with sdpa_kernel",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.attention.sdpa_kernel.html",
+    "text": "torch.nn.attention.sdpa_kernel allows explicitly enabling or disabling specific SDPA backends using context managers. Users can pass torch.nn.attention.SDPBackend.FLASH_ATTENTION, EFFICIENT_ATTENTION, or MATH to force deterministic backend selection or benchmark backend performance.",
+    "split": "train"
+  },
+  "doc_sys_007": {
+    "title": "FlashAttention IO-Aware Tiling Algorithm",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html",
+    "text": "Standard attention materializes an N x N attention weight matrix in high-bandwidth memory (HBM), requiring O(N^2) memory footprint and repeated global memory traffic. FlashAttention uses tiling to load blocks of Q, K, and V into fast on-chip SRAM cache, computing softmax incrementally using online normalization, reducing memory consumption to O(N) and eliminating HBM round-trips.",
+    "split": "train"
+  },
+  "doc_sys_008": {
+    "title": "KV Cache Mechanics in Autoregressive Generation",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html",
+    "text": "In autoregressive decoder transformers, generating each new token only requires computing Key and Value vectors for the current token position. A Key-Value (KV) cache stores previously computed Key and Value tensors in GPU VRAM across generation steps, avoiding redundant re-computation of past token activations at the cost of linear VRAM growth per sequence.",
+    "split": "train"
+  },
+  "doc_sys_009": {
+    "title": "Dynamic KV Cache vs Static Pre-Allocated KV Cache",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html",
+    "text": "A dynamic KV cache concatenates new Key/Value tensors along the sequence dimension (torch.cat) at each generation step, which causes repeated GPU memory allocations and fragmentation. A static KV cache pre-allocates a fixed-size tensor buffer (batch_size, num_heads, max_seq_len, head_dim) and updates slices in-place via tensor[..., current_idx:current_idx+1, :] = new_kv.",
+    "split": "train"
+  },
+  "doc_sys_010": {
+    "title": "Static KV Cache Compatibility with CUDA Graphs",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html",
+    "text": "Static pre-allocated KV caches are essential for combining autoregressive LLM decoding with CUDA Graphs. Because CUDA Graphs require invariant tensor memory pointers and fixed shapes across replay executions, static KV caching allows capturing the single-token decoding step into a replayable graph, eliminating CPU launch latency.",
+    "split": "train"
+  },
+  "doc_sys_011": {
+    "title": "LoRA (Low-Rank Adaptation) Mathematical Formulation",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/conceptual_guides/lora",
+    "text": "Low-Rank Adaptation (LoRA) freezes pretrained model weights W_0 of shape (d, k) and parameterizes weight updates as the low-rank product of two trainable matrices: Delta_W = B * A, where B has shape (d, r) and A has shape (r, k) with rank r << min(d, k). Forward computation computes h = W_0 * x + (scaling * B * A * x), reducing trainable parameters by 99% or more.",
+    "split": "train"
+  },
+  "doc_sys_012": {
+    "title": "LoRA Matrix Initialization Protocol",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/package_reference/lora",
+    "text": "In standard LoRA implementations, matrix A is initialized with random Gaussian values (e.g., normal distribution with mean 0 and std 1/r) and matrix B is initialized strictly to all zeros. This ensures that Delta_W = B * A equals zero at the beginning of training, preserving the exact original behavior of the pretrained model at step zero.",
+    "split": "train"
+  },
+  "doc_sys_013": {
+    "title": "LoRA Scaling Factor (alpha / r)",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/package_reference/lora",
+    "text": "When computing low-rank updates, the product (B * A) is multiplied by a constant scaling factor (alpha / r). Constant alpha allows varying the rank r during hyperparameter search without needing to adjust the learning rate, as the magnitude of the adapter update remains normalized relative to the rank.",
+    "split": "train"
+  },
+  "doc_sys_014": {
+    "title": "Merging LoRA Weights for Zero-Inference-Overhead Deployment",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/developer_guides/lora#merge-lora-weights-into-the-base-model",
+    "text": "After fine-tuning, the low-rank adapter matrices can be merged directly into the frozen base weights via W_merged = W_0 + (alpha / r) * (B * A). Merging restores the standard linear layer structure, eliminating all adapter compute overhead and additional memory latency during production inference.",
+    "split": "train"
+  },
+  "doc_sys_015": {
+    "title": "Multi-Head Attention (MHA) vs Grouped-Query Attention (GQA)",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/glossary#grouped-query-attention",
+    "text": "Standard Multi-Head Attention (MHA) uses an equal number of query, key, and value heads (H_Q = H_KV). Grouped-Query Attention (GQA) assigns multiple query heads to share a single key/value head (e.g., 8 query heads per 1 KV head). GQA reduces KV cache memory footprint by a factor of H_Q / H_KV during autoregressive decoding while maintaining model quality.",
+    "split": "train"
+  },
+  "doc_sys_016": {
+    "title": "Multi-Query Attention (MQA) Structure",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/glossary#multi-query-attention",
+    "text": "Multi-Query Attention (MQA) is the extreme variant of GQA where all query heads share a single common key head and a single common value head (H_KV = 1). This minimizes KV cache memory consumption and memory bandwidth requirements to the lowest possible theoretical limit, though it slightly reduces model expressive capacity compared to GQA.",
+    "split": "train"
+  },
+  "doc_sys_017": {
+    "title": "Rotary Position Embedding (RoPE) Formulation",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/model_doc/llama",
+    "text": "Rotary Position Embedding (RoPE) encodes relative positional distance by rotating 2D query and key sub-vectors by an angle proportional to their sequence position. Because rotation is an orthogonal transformation that preserves inner product angles, RoPE naturally incorporates relative distance into the attention dot product without adding positional embeddings to input word vectors.",
+    "split": "train"
+  },
+  "doc_sys_018": {
+    "title": "Causal Attention Masking in SDPA via is_causal=True",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html",
+    "text": "When executing decoder self-attention, passing is_causal=True to torch.nn.functional.scaled_dot_product_attention informs the underlying kernel to apply upper-triangular masking automatically. This allows backends like FlashAttention to skip computing and loading the masked upper-triangular tiles entirely, doubling execution throughput.",
+    "split": "train"
+  },
+  "doc_sys_019": {
+    "title": "PagedAttention Memory Virtualization Concept",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.vllm.ai/en/latest/",
+    "text": "PagedAttention adapts operating system virtual memory paging to transformer KV caching. Instead of allocating contiguous VRAM blocks for the maximum possible sequence length (which wastes 60-80% of VRAM due to internal and external fragmentation), PagedAttention partitions KV tensors into fixed-size physical memory pages, dynamically mapping logical sequence tokens to non-contiguous GPU pages.",
+    "split": "train"
+  },
+  "doc_sys_020": {
+    "title": "Quantization Basics: INT8 vs FP8 Formats",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/quantization.html",
+    "text": "Post-training quantization and quantized fine-tuning compress FP16 model weights into 8-bit representations. INT8 represents values as signed 8-bit integers using scale and zero-point parameters. Modern FP8 formats (E4M3 for weights/activations and E5M2 for gradients) maintain floating-point dynamic range, allowing hardware acceleration directly on Ada Lovelace and Hopper Tensor Cores.",
+    "split": "train"
+  },
+  "doc_sys_021": {
+    "title": "Weight-Only Quantization (W8A16 / W4A16)",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/quantization.html",
+    "text": "In memory-bandwidth-bound LLM text generation with batch size 1, weight-only quantization stores model parameters in INT8 or INT4 while keeping activations in FP16. Before matrix multiplication, weights are dequantized on-the-fly to FP16 in registers, cutting memory bandwidth traffic across GPU HBM by 50% to 75%.",
+    "split": "train"
+  },
+  "doc_sys_022": {
+    "title": "Speculative Decoding Acceleration Overview",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/generation_strategies#speculative-decoding",
+    "text": "Speculative decoding pairs a small, fast draft model with a large target model. The draft model quickly proposes K candidate tokens autoregressively. The target model evaluates all K proposed tokens simultaneously in a single parallel forward pass, accepting candidates that match its probability distribution and rejecting deviations, delivering 2x-3x latency reductions without changing output quality.",
+    "split": "train"
+  },
+  "doc_sys_023": {
+    "title": "Activation Memory vs Parameter Memory Scaling with Context Length",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/notes/cuda.html",
+    "text": "While model parameter memory remains strictly constant regardless of input size, activation memory scales linearly with sequence length in modern tiled attention, and quadratically in standard attention. At sequence lengths of 8k or 32k tokens, activation memory easily surpasses model weight memory, necessitating gradient checkpointing and FlashAttention.",
+    "split": "train"
+  },
+  "doc_sys_024": {
+    "title": "Python Garbage Collector Generation Thresholds",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/library/gc.html#gc.set_threshold",
+    "text": "CPython manages cyclic garbage collection using three generational pools (Generation 0, 1, and 2). gc.set_threshold(threshold0, threshold1, threshold2) controls the frequency of garbage collection cycles. During training loops, cyclic GC pauses can cause periodic latency stuttering; tuning thresholds or disabling GC during timed iterations stabilizes step times.",
+    "split": "train"
+  },
+  "doc_sys_025": {
+    "title": "PyTorch Distributed RPC Framework",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/rpc.html",
+    "text": "PyTorch's Remote Procedure Call (RPC) framework allows running functions remotely across distributed cluster nodes. It provides rpc_sync, rpc_async, and remote reference (RRef) mechanisms, serving as the foundational infrastructure for parameter server architectures and pipeline parallelism (PiPPy).",
+    "split": "train"
+  },
+  "doc_sys_val_001": {
+    "title": "Verifying Free-Threaded Python Support in C Extensions",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/c-api/init.html#free-threaded-c-api-support",
+    "text": "In Python 3.13 free-threaded builds, C extensions must explicitly declare support for running without the GIL using PyUnstable_Module_SetGIL(mod, Py_MOD_GIL_NOT_USED). If an imported C extension does not declare compatibility, the Python runtime automatically re-enables the GIL for the entire process to prevent memory corruption.",
+    "split": "val"
+  },
+  "doc_sys_val_002": {
+    "title": "FlashAttention Head Dimension Alignment Constraints",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html",
+    "text": "FlashAttention imposes specific hardware alignment requirements: the head dimension (head_dim) must be a multiple of 8 (and typically <= 256), inputs must be contiguous in memory, and data types must be Float16 or BFloat16 on NVIDIA Ampere (SM 80+) or newer architectures. If these constraints are violated, SDPA falls back to the Math or Efficient backend.",
+    "split": "val"
+  },
+  "doc_sys_val_003": {
+    "title": "LoRA Adapter Swapping in Multi-Tenant Serving",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/conceptual_guides/lora",
+    "text": "Because LoRA parameters represent only a tiny fraction of total model weights, serving engines can host a single shared copy of frozen base model weights in GPU VRAM and dynamically swap small LoRA adapter matrices (A and B) per request, enabling multi-tenant personalized model serving without loading separate 7B+ model instances.",
+    "split": "val"
+  },
+  "doc_sys_val_004": {
+    "title": "Sliding Window Attention (Local Attention) Memory Ceiling",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/model_doc/mistral#sliding-window-attention",
+    "text": "Sliding Window Attention restricts each token to attending only to a local window of W preceding tokens. In autoregressive generation, this caps the active KV cache size per sequence to exactly W tokens rather than growing unbounded to the full sequence length, maintaining constant VRAM consumption for infinitely long text streams.",
+    "split": "val"
+  },
+  "doc_sys_val_005": {
+    "title": "Context Manager for Profiling Host vs GPU Time: record_function",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/autograd.html#torch.autograd.profiler.record_function",
+    "text": "torch.autograd.profiler.record_function(name) is a context manager that labels custom user code blocks inside the PyTorch Profiler and Chrome Trace timeline. It enables attributing CPU host overhead and downstream CUDA kernel launches to specific high-level PyTorch modules or functions.",
+    "split": "val"
+  },
+  "doc_sys_test_001": {
+    "title": "Why Python Free-Threaded Builds Re-Enable the GIL Automatically",
+    "topic": "systems_attention_llm",
+    "source_url": "https://docs.python.org/3/c-api/init.html#free-threaded-c-api-support",
+    "text": "If a Python 3.13 script starts with the GIL disabled, but subsequently imports an older C extension library that has not been compiled with Py_MOD_GIL_NOT_USED, the CPython interpreter will print a warning and immediately re-lock the GIL for all threads to ensure thread-safety against legacy global state.",
+    "split": "test"
+  },
+  "doc_sys_test_002": {
+    "title": "Diagnosing Silent Fallbacks to SDPA Math Backend",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/docs/stable/generated/torch.nn.functional.scaled_dot_product_attention.html",
+    "text": "When SDPA silently falls back from FlashAttention to the slow Math backend, it is typically caused by passing non-contiguous query/key tensors, using Float32 precision instead of FP16/BF16, or providing custom non-standard attention bias shapes. Disabling the math backend via sdpa_kernel(enable_math=False) forces PyTorch to raise an informative error detailing the exact constraint violation.",
+    "split": "test"
+  },
+  "doc_sys_test_003": {
+    "title": "Preventing Dynamic KV Cache GPU Memory Fragmentation",
+    "topic": "systems_attention_llm",
+    "source_url": "https://pytorch.org/tutorials/intermediate/scaled_dot_product_attention_tutorial.html",
+    "text": "Repeatedly calling torch.cat on KV cache tensors at every generated token causes frequent reallocation of growing buffers. This rapid churn of varying tensor sizes creates severe virtual memory fragmentation in PyTorch's caching allocator. Switching to a pre-allocated static cache with slice assignments keeps buffer pointers fixed and eliminates fragmentation.",
+    "split": "test"
+  },
+  "doc_sys_test_004": {
+    "title": "Why LoRA Matrix B Must Be Initialized to Zero",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/peft/conceptual_guides/lora",
+    "text": "If LoRA matrix B were initialized with random weights along with matrix A, the product B * A would be non-zero at step 0. This would inject random noise into the pretrained weights, immediately destroying the model's pretrained capabilities and causing a massive loss spike on the first training iteration. Initializing B to zero ensures Delta_W starts at strictly zero.",
+    "split": "test"
+  },
+  "doc_sys_test_005": {
+    "title": "Memory Savings Ratio of Grouped-Query Attention (GQA)",
+    "topic": "systems_attention_llm",
+    "source_url": "https://huggingface.co/docs/transformers/main/en/glossary#grouped-query-attention",
+    "text": "In a model with 32 query heads and 8 key/value heads, Grouped-Query Attention reduces KV cache storage and memory bandwidth demand by a factor of 4x (32 / 8) compared to Multi-Head Attention. This allows 4x larger batch sizes or 4x longer context windows to fit within the same physical GPU VRAM capacity during inference.",
+    "split": "test"
+  }
+}

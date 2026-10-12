@@ -1,0 +1,132 @@
+{
+  "q_ag_test_001": {
+    "doc_ag_test_001": 1,
+    "doc_ag_val_001": 1
+  },
+  "q_ag_test_002": {
+    "doc_ag_test_002": 1
+  },
+  "q_ag_test_003": {
+    "doc_ag_test_003": 1
+  },
+  "q_ag_test_004": {
+    "doc_ag_test_004": 1,
+    "doc_ag_003": 1
+  },
+  "q_ag_test_005": {
+    "doc_ag_test_005": 1
+  },
+  "q_ag_test_006": {
+    "doc_ag_test_006": 1
+  },
+  "q_cuda_test_001": {
+    "doc_cuda_test_001": 1,
+    "doc_cuda_014": 1
+  },
+  "q_cuda_test_002": {
+    "doc_cuda_test_002": 1,
+    "doc_cuda_015": 1
+  },
+  "q_cuda_test_003": {
+    "doc_cuda_test_003": 1,
+    "doc_cuda_011": 1
+  },
+  "q_cuda_test_004": {
+    "doc_cuda_test_004": 1,
+    "doc_cuda_007": 1
+  },
+  "q_cuda_test_005": {
+    "doc_cuda_test_005": 1
+  },
+  "q_cuda_test_006": {
+    "doc_cuda_test_006": 1
+  },
+  "q_dist_test_001": {
+    "doc_dist_test_001": 1
+  },
+  "q_dist_test_002": {
+    "doc_dist_test_002": 1
+  },
+  "q_dist_test_003": {
+    "doc_dist_test_003": 1
+  },
+  "q_dist_test_004": {
+    "doc_dist_test_004": 1
+  },
+  "q_dist_test_005": {
+    "doc_dist_test_005": 1,
+    "doc_dist_003": 1
+  },
+  "q_dist_test_006": {
+    "doc_dist_test_006": 1
+  },
+  "q_comp_test_001": {
+    "doc_comp_test_001": 1,
+    "doc_comp_012": 1
+  },
+  "q_comp_test_002": {
+    "doc_comp_test_002": 1,
+    "doc_comp_006": 1
+  },
+  "q_comp_test_003": {
+    "doc_comp_test_003": 1,
+    "doc_comp_017": 1
+  },
+  "q_comp_test_004": {
+    "doc_comp_test_004": 1,
+    "doc_comp_012": 1
+  },
+  "q_comp_test_005": {
+    "doc_comp_test_005": 1,
+    "doc_comp_007": 1
+  },
+  "q_comp_test_006": {
+    "doc_comp_test_006": 1,
+    "doc_comp_008": 1
+  },
+  "q_dl_test_001": {
+    "doc_dl_test_001": 1,
+    "doc_dl_007": 1
+  },
+  "q_dl_test_002": {
+    "doc_dl_test_002": 1,
+    "doc_dl_005": 1
+  },
+  "q_dl_test_003": {
+    "doc_dl_test_003": 1,
+    "doc_dl_015": 1
+  },
+  "q_dl_test_004": {
+    "doc_dl_test_004": 1,
+    "doc_dl_008": 1
+  },
+  "q_dl_test_005": {
+    "doc_dl_test_005": 1,
+    "doc_dl_009": 1
+  },
+  "q_dl_test_006": {
+    "doc_dl_test_006": 1,
+    "doc_dl_006": 1
+  },
+  "q_sys_test_001": {
+    "doc_sys_test_001": 1,
+    "doc_sys_val_001": 1
+  },
+  "q_sys_test_002": {
+    "doc_sys_test_002": 1,
+    "doc_sys_val_002": 1,
+    "doc_sys_006": 1
+  },
+  "q_sys_test_003": {
+    "doc_sys_test_003": 1,
+    "doc_sys_009": 1
+  },
+  "q_sys_test_004": {
+    "doc_sys_test_004": 1,
+    "doc_sys_012": 1
+  },
+  "q_sys_test_005": {
+    "doc_sys_test_005": 1,
+    "doc_sys_015": 1
+  }
+}
